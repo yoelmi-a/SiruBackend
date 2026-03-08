@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="SIRU.Core.Application/SIRU.Core.Application.csproj" />
+    <Project Path="SIRU.Core.Domain/SIRU.Core.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="SIRU.Infrastructure.Identity/SIRU.Infrastructure.Identity.csproj" />
+    <Project Path="SIRU.Infrastructure.Persistence/SIRU.Infrastructure.Persistence.csproj" />
+    <Project Path="SIRU.Infrastructure.Shared/SIRU.Infrastructure.Shared.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="SIRU.Presentation.Api/SIRU.Presentation.Api.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="SIRU.Tests.IntegrationTests/SIRU.Tests.IntegrationTests.csproj" />
+    <Project Path="SIRU.Tests.UnitTests/SIRU.Tests.UnitTests.csproj" />
+  </Folder>
+</Solution>

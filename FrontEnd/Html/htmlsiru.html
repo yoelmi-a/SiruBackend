@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIRU – Gestión de Vacantes</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── CSS Reset & Variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --base-100: #f4f6fb;
+      --base-200: #e9ecf4;
+      --base-300: #d4daea;
+      --base-content: #1e2533;
+      --primary: #4f6ef7;
+      --primary-focus: #3a58e8;
+      --primary-content: #ffffff;
+      --secondary: #7c3aed;
+      --accent: #06b6d4;
+      --neutral: #374151;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --info: #3b82f6;
+      --rounded-box: 1rem;
+      --rounded-btn: .5rem;
+      --rounded-badge: 1.9rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 12px rgba(79,110,247,.1), 0 2px 6px rgba(0,0,0,.07);
+      --shadow-lg: 0 10px 30px rgba(79,110,247,.15), 0 4px 10px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--base-100);
+      color: var(--base-content);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: #1a2238;
+      color: #c8d0e7;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+      box-shadow: 4px 0 20px rgba(0,0,0,.2);
+    }
+
+    .sidebar-logo {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .sidebar-logo .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.5px;
+    }
+
+    .sidebar-logo .logo-sub {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #7b8ab8;
+      margin-top: 2px;
+    }
+
+    .sidebar-section {
+      padding: .75rem 1rem .25rem;
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #4a5580;
+      font-weight: 600;
+    }
+
+    .sidebar-menu { list-style: none; padding: 0 .75rem; }
+    .sidebar-menu li a {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .65rem .9rem;
+      border-radius: .5rem;
+      color: #8d9cc4;
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: all .15s;
+      margin-bottom: 2px;
+    }
+    .sidebar-menu li a:hover { background: rgba(79,110,247,.12); color: #c8d0e7; }
+    .sidebar-menu li a.active { background: rgba(79,110,247,.2); color: #7fa4ff; }
+    .sidebar-menu li a svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .sidebar-avatar {
+      margin-top: auto;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .avatar-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: grid; place-items: center;
+      font-weight: 700; font-size: .85rem; color: #fff; flex-shrink: 0;
+    }
+    .avatar-name { font-size: .82rem; font-weight: 600; color: #c8d0e7; }
+    .avatar-role { font-size: .7rem; color: #5a6a90; }
+
+    /* ── Main Layout ── */
+    .main-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--base-200);
+      padding: .85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--base-content); }
+    .topbar-breadcrumb { font-size: .75rem; color: #8899bb; margin-top: 1px; }
+
+    .topbar-actions { display: flex; align-items: center; gap: .75rem; }
+
+    /* ── Buttons (DaisyUI-like) ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .55rem 1.1rem;
+      border-radius: var(--rounded-btn);
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn svg { width: 16px; height: 16px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-focus); box-shadow: 0 4px 12px rgba(79,110,247,.35); }
+    .btn-ghost { background: transparent; color: var(--neutral); }
+    .btn-ghost:hover { background: var(--base-200); }
+    .btn-sm { padding: .4rem .85rem; font-size: .78rem; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: #fff; }
+    .btn-error-outline { background: transparent; border: 1.5px solid var(--error); color: var(--error); }
+    .btn-error-outline:hover { background: var(--error); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { filter: brightness(.93); }
+    .btn-disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+    /* ── Content ── */
+    .content { padding: 1.75rem 2rem; flex: 1; }
+
+    /* ── Stats Cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: var(--rounded-box);
+      padding: 1.25rem 1.4rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--base-200);
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      transition: box-shadow .2s;
+    }
+    .stat-card:hover { box-shadow: var(--shadow-md); }
+
+    .stat-header { display: flex; align-items: center; justify-content: space-between; }
+    .stat-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #8899bb; }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: .6rem;
+      display: grid; place-items: center;
+    }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 700; color: var(--base-content); line-height: 1; }
+    .stat-desc { font-size: .75rem; color: #8899bb; }
+    .stat-trend { font-size: .73rem; font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--error); }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1.5px solid var(--base-300);
+      border-radius: var(--rounded-btn);
+      padding: .45rem .9rem;
+      gap: .5rem;
+      transition: border-color .15s;
+    }
+    .input-group:focus-within { border-color: var(--primary); }
+    .input-group svg { width: 16px; height: 16px; color: #8899bb; flex-shrink: 0; }
+    .input-group input {
+      border: none; outline: none; background: transparent;
+      font-size: .85rem; color: var(--base-content); font-family: inherit; width: 200px;
+    }
+    .input-group input::placeholder { color: #b0bcd4; }
+
+    .select-styled {
+      appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238899bb' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right .7rem center;
+      border: 1.5px solid var(--base-300);
+      border-radius: var(--rounded-btn);
+      padding: .45rem 2rem .45rem .9rem;
+      font-size: .83rem;
+      font-family: inherit;
+      color: var(--base-content);
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .select-styled:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Table / Card Toggle ── */
+    .view-toggle { display: flex; background: var(--base-200); border-radius: .4rem; padding: 3px; gap: 2px; }
+    .view-btn {
+      padding: .35rem .6rem;
+      border-radius: .3rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #8899bb;
+      transition: all .15s;
+    }
+    .view-btn.active { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
+    .view-btn svg { width: 15px; height: 15px; display: block; }
+
+    /* ── Table ── */
+    .card {
+      background: #fff;
+      border-radius: var(--rounded-box);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--base-200);
+      overflow: hidden;
+    }
+
+    .table-wrapper { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1.5px solid var(--base-200); }
+    thead th {
+      padding: .85rem 1.25rem;
+      text-align: left;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #8899bb;
+      white-space: nowrap;
+    }
+    thead th.sortable { cursor: pointer; user-select: none; }
+    thead th.sortable:hover { color: var(--primary); }
+    tbody tr {
+      border-bottom: 1px solid var(--base-100);
+      transition: background .1s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8f9ff; }
+    tbody td { padding: .9rem 1.25rem; font-size: .875rem; vertical-align: middle; }
+
+    .td-title { font-weight: 600; color: var(--base-content); }
+    .td-sub { font-size: .75rem; color: #8899bb; margin-top: 2px; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .25rem .7rem;
+      border-radius: var(--rounded-badge);
+      font-size: .72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-error   { background: #fee2e2; color: #b91c1c; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+    .badge-info    { background: #dbeafe; color: #1d4ed8; }
+    .badge-neutral { background: var(--base-200); color: #6b7280; }
+    .badge-dot::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+    }
+
+    /* ── Action Buttons Row ── */
+    .action-row { display: flex; gap: .5rem; align-items: center; }
+
+    /* ── Card Grid View ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .vacant-card {
+      background: #fff;
+      border-radius: var(--rounded-box);
+      border: 1px solid var(--base-200);
+      padding: 1.3rem 1.4rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s, transform .2s;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+    .vacant-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+    .vacant-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+    .vacant-card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--base-content); }
+    .vacant-card-body { font-size: .82rem; color: #6b7280; line-height: 1.55; }
+    .vacant-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-top: auto; }
+
+    .meta-row { display: flex; align-items: center; gap: .4rem; font-size: .75rem; color: #8899bb; }
+    .meta-row svg { width: 13px; height: 13px; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(17,24,39,.55);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn .15s ease;
+    }
+    .modal-overlay.open { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.1rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,.2);
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp .2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    .modal-header {
+      padding: 1.4rem 1.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--base-200);
+    }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+    .modal-close {
+      background: var(--base-200); border: none; border-radius: .4rem;
+      width: 30px; height: 30px; display: grid; place-items: center;
+      cursor: pointer; color: #6b7280; transition: background .15s;
+    }
+    .modal-close:hover { background: var(--base-300); }
+    .modal-close svg { width: 16px; height: 16px; }
+
+    .modal-body { padding: 1.4rem 1.6rem; display: flex; flex-direction: column; gap: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-label { font-size: .8rem; font-weight: 600; color: var(--neutral); }
+    .form-input, .form-textarea, .form-select {
+      border: 1.5px solid var(--base-300);
+      border-radius: .5rem;
+      padding: .6rem .9rem;
+      font-size: .875rem;
+      font-family: inherit;
+      color: var(--base-content);
+      transition: border-color .15s;
+      background: #fff;
+      width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary); }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238899bb' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .75rem center; padding-right: 2.2rem; }
+    .form-hint { font-size: .72rem; color: #8899bb; }
+    .form-error-msg { font-size: .72rem; color: var(--error); display: none; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .modal-footer {
+      padding: 1rem 1.6rem 1.4rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: .75rem;
+      border-top: 1px solid var(--base-200);
+    }
+
+    /* ── Loading Spinner ── */
+    .loading-overlay {
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      border-radius: inherit;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--base-200);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem; right: 1.5rem;
+      display: flex; flex-direction: column; gap: .5rem;
+      z-index: 200;
+    }
+    .toast {
+      background: #fff;
+      border-radius: .6rem;
+      padding: .8rem 1.1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-size: .83rem;
+      font-weight: 500;
+      min-width: 260px;
+      border-left: 3.5px solid;
+      animation: slideInRight .25s ease;
+    }
+    @keyframes slideInRight { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .toast-success { border-color: var(--success); color: #166534; }
+    .toast-error   { border-color: var(--error); color: #991b1b; }
+    .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 1.25rem;
+      border-top: 1px solid var(--base-200);
+      font-size: .8rem;
+      color: #8899bb;
+    }
+    .page-btns { display: flex; gap: .3rem; }
+    .page-btn {
+      width: 30px; height: 30px;
+      display: grid; place-items: center;
+      border-radius: .4rem;
+      border: 1.5px solid var(--base-300);
+      background: #fff;
+      cursor: pointer;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--neutral);
+      transition: all .15s;
+    }
+    .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .page-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .page-btn svg { width: 14px; height: 14px; }
+
+    /* ── Confirm Dialog ── */
+    .confirm-dialog { max-width: 400px; }
+    .confirm-icon {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #fee2e2;
+      display: grid; place-items: center;
+      margin: 0 auto .75rem;
+    }
+    .confirm-icon svg { width: 24px; height: 24px; color: var(--error); }
+    .confirm-body { text-align: center; padding: 1.25rem 1.6rem; }
+    .confirm-body p { color: #6b7280; font-size: .875rem; margin-top: .5rem; line-height: 1.55; }
+    .confirm-body strong { font-family: 'Syne', sans-serif; font-size: 1.1rem; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: #b0bcd4;
+    }
+    .empty-state svg { width: 52px; height: 52px; margin: 0 auto .75rem; display: block; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: #8899bb; }
+    .empty-state p { font-size: .82rem; margin-top: .35rem; }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--base-200) 25%, var(--base-300) 50%, var(--base-200) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      border-radius: .4rem;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ── Utilities ── */
+    .hidden { display: none !important; }
+    .text-muted { color: #8899bb; }
+    .font-mono { font-family: 'Courier New', monospace; font-size: .78rem; color: #8899bb; }
+    .flex { display: flex; } .items-center { align-items: center; } .gap-2 { gap: .5rem; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">SIRU</div>
+    <div class="logo-sub">Recursos Humanos</div>
+  </div>
+
+  <div class="sidebar-section">Principal</div>
+  <ul class="sidebar-menu">
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a></li>
+    <li><a href="#" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Vacantes
+    </a></li>
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Candidatos
+    </a></li>
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 116.1 19.07"/></svg>
+      Evaluaciones
+    </a></li>
+  </ul>
+
+  <div class="sidebar-section">Reportes</div>
+  <ul class="sidebar-menu">
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analítica
+    </a></li>
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Informes
+    </a></li>
+  </ul>
+
+  <div class="sidebar-section">Sistema</div>
+  <ul class="sidebar-menu">
+    <li><a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Configuración
+    </a></li>
+  </ul>
+
+  <div class="sidebar-avatar">
+    <div class="avatar-circle">LM</div>
+    <div>
+      <div class="avatar-name">Laura Méndez</div>
+      <div class="avatar-role">Administradora RRHH</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════ MAIN ══════════════════════════ -->
+<div class="main-wrapper">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">Gestión de Vacantes</div>
+      <div class="topbar-breadcrumb">SIRU / Reclutamiento / Vacantes</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" title="Notificaciones">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </button>
+      <button class="btn btn-primary" onclick="openModal('create')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva Vacante
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Total Vacantes</span>
+          <div class="stat-icon" style="background:#eff2ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4f6ef7" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">24</div>
+        <div class="stat-trend trend-up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="18 15 12 9 6 15"/></svg>
+          +3 este mes
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Abiertas</span>
+          <div class="stat-icon" style="background:#dcfce7;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">14</div>
+        <div class="stat-trend trend-up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="18 15 12 9 6 15"/></svg>
+          +2 esta semana
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">En Revisión</span>
+          <div class="stat-icon" style="background:#fef3c7;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">6</div>
+        <div class="stat-trend" style="color:#8899bb;">Sin cambios</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Cerradas</span>
+          <div class="stat-icon" style="background:#fee2e2;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+        </div>
+        <div class="stat-value">4</div>
+        <div class="stat-trend trend-down">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
+          -1 este mes
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="input-group">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Buscar vacantes..." id="searchInput" oninput="filterTable()" />
+        </div>
+        <select class="select-styled" id="statusFilter" onchange="filterTable()">
+          <option value="">Todos los estados</option>
+          <option value="Abierta">Abierta</option>
+          <option value="En Revisión">En Revisión</option>
+          <option value="Cerrada">Cerrada</option>
+          <option value="Pausada">Pausada</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="view-toggle">
+          <button class="view-btn active" id="tableViewBtn" onclick="switchView('table')" title="Vista tabla">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+          <button class="view-btn" id="cardViewBtn" onclick="switchView('card')" title="Vista tarjetas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div id="tableView">
+      <div class="card" style="position:relative;">
+        <div class="loading-overlay" id="tableLoading">
+          <div class="spinner"></div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable">Puesto ↕</th>
+                <th>Perfil requerido</th>
+                <th class="sortable">Fecha publicación ↕</th>
+                <th>Fecha contratación</th>
+                <th>Estado</th>
+                <th style="text-align:right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- rows filled by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span id="paginationInfo">Mostrando 1–8 de 14 resultados</span>
+          <div class="page-btns">
+            <button class="page-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div id="cardView" class="hidden">
+      <div class="card-grid" id="cardGrid">
+        <!-- cards filled by JS -->
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════ MODAL CREAR / EDITAR ══════════════════════════ -->
+<div class="modal-overlay" id="vacantModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Nueva Vacante</div>
+      <button class="modal-close" onclick="closeModal('vacantModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título del puesto *</label>
+        <input type="text" class="form-input" id="f_title" placeholder="ej. Desarrollador Backend Senior" />
+        <span class="form-error-msg" id="err_title">Este campo es obligatorio.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción *</label>
+        <textarea class="form-textarea" id="f_description" placeholder="Describe las responsabilidades y condiciones del puesto..."></textarea>
+        <span class="form-error-msg" id="err_description">Este campo es obligatorio.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Perfil requerido *</label>
+        <textarea class="form-textarea" id="f_profile" placeholder="Indica habilidades, experiencia y competencias necesarias..." style="min-height:75px;"></textarea>
+        <span class="form-error-msg" id="err_profile">Este campo es obligatorio.</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select class="form-select" id="f_status">
+            <option value="1">Abierta</option>
+            <option value="3">En Revisión</option>
+            <option value="2">Cerrada</option>
+            <option value="4">Pausada</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de contratación</label>
+          <input type="date" class="form-input" id="f_hiringDate" />
+          <span class="form-hint">Opcional</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('vacantModal')">Cancelar</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveVacant()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ MODAL DETALLE ══════════════════════════ -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-header">
+      <div class="modal-title" id="detail_title">Detalle de Vacante</div>
+      <button class="modal-close" onclick="closeModal('detailModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="detailBody">
+      <!-- filled by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('detailModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ MODAL CONFIRMAR ELIMINAR ══════════════════════════ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box confirm-dialog">
+    <div class="confirm-body">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+      </div>
+      <strong>¿Eliminar vacante?</strong>
+      <p>Esta acción es irreversible. Se eliminará la vacante <strong id="confirmVacantName">"Desarrollador Backend"</strong> y todos sus datos asociados.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:1rem;">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancelar</button>
+      <button class="btn btn-error-outline" id="confirmDeleteBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        Sí, eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══════════════════════════ JAVASCRIPT ══════════════════════════ -->
+<script>
+  /* ── Fake Data ── */
+  const statusMap = {
+    1: { label: 'Abierta',     cls: 'badge-success' },
+    2: { label: 'Cerrada',     cls: 'badge-error'   },
+    3: { label: 'En Revisión', cls: 'badge-warning' },
+    4: { label: 'Pausada',     cls: 'badge-neutral' },
+  };
+
+  let vacants = [
+    { id: 'v-001', title: 'Desarrollador Backend Senior', description: 'Responsable del diseño, desarrollo y mantenimiento de APIs REST en .NET 10. Coordinará con el equipo frontend para la integración de servicios.', profile: 'C# .NET, Clean Architecture, PostgreSQL, Docker, +5 años de experiencia.', publicationDate: '2025-11-10', hiringDate: '2026-02-01', status: 1 },
+    { id: 'v-002', title: 'Diseñador UX/UI', description: 'Diseñar interfaces intuitivas para productos digitales internos y externos. Gestión de sistemas de diseño en Figma.', profile: 'Figma, Design Systems, usabilidad, HTML/CSS, +3 años.', publicationDate: '2025-11-18', hiringDate: '2026-01-15', status: 1 },
+    { id: 'v-003', title: 'Analista de Datos', description: 'Análisis y visualización de datos del negocio para soporte a decisiones estratégicas de RRHH y finanzas.', profile: 'Python, SQL, Power BI, estadística aplicada.', publicationDate: '2025-12-01', hiringDate: null, status: 3 },
+    { id: 'v-004', title: 'Gerente de Proyectos TI', description: 'Liderar proyectos tecnológicos bajo metodologías ágiles. Gestión de presupuesto, cronograma y equipo multidisciplinario.', profile: 'PMP / PMI, Scrum, gestión de riesgos, comunicación ejecutiva.', publicationDate: '2025-12-05', hiringDate: '2026-03-01', status: 1 },
+    { id: 'v-005', title: 'Desarrollador Frontend React', description: 'Implementación de componentes React reutilizables, integración con APIs REST y optimización de rendimiento.', profile: 'React, TypeScript, TailwindCSS, +2 años de experiencia.', publicationDate: '2025-12-10', hiringDate: '2026-01-20', status: 1 },
+    { id: 'v-006', title: 'Especialista en Ciberseguridad', description: 'Auditoría de sistemas, gestión de vulnerabilidades y elaboración de políticas de seguridad informática.', profile: 'CISSP / CEH, ethical hacking, redes, normativa ISO 27001.', publicationDate: '2025-10-20', hiringDate: '2025-12-01', status: 2 },
+    { id: 'v-007', title: 'Scrum Master', description: 'Facilitar ceremonias ágiles, remover impedimentos y fomentar la mejora continua del equipo de desarrollo.', profile: 'CSM, PSM-I, experiencia en equipos remotos, coaching ágil.', publicationDate: '2025-12-15', hiringDate: null, status: 3 },
+    { id: 'v-008', title: 'Coordinador de Reclutamiento', description: 'Gestión del ciclo completo de selección de personal, coordinación con jefaturas y administración de ATS.', profile: 'Psicología o RRHH, manejo de Workday/BambooHR, entrevistas por competencias.', publicationDate: '2026-01-05', hiringDate: '2026-03-15', status: 1 },
+    { id: 'v-009', title: 'DevOps Engineer', description: 'Diseño e implementación de pipelines CI/CD, administración de infraestructura en nube y monitoreo de servicios.', profile: 'Kubernetes, Docker, Azure/AWS, Terraform, +4 años.', publicationDate: '2026-01-10', hiringDate: null, status: 3 },
+    { id: 'v-010', title: 'Contador General', description: 'Elaboración de estados financieros, gestión tributaria y cierre contable mensual bajo NIIF.', profile: 'CPA, SAP B1, NIIF, experiencia en empresas medianas.', publicationDate: '2025-09-14', hiringDate: '2025-11-01', status: 2 },
+    { id: 'v-011', title: 'Soporte TI Nivel 2', description: 'Resolución de incidentes técnicos escalados, administración de directorio activo y soporte a usuarios internos.', profile: 'MCSA, Active Directory, Windows Server, ticketing (Jira/ServiceNow).', publicationDate: '2026-01-20', hiringDate: '2026-03-01', status: 4 },
+    { id: 'v-012', title: 'Especialista en Marketing Digital', description: 'Gestión de campañas SEM/SEO, redes sociales y email marketing para captación y fidelización.', profile: 'Google Ads, Meta Ads, HubSpot, analítica web, +3 años.', publicationDate: '2026-02-01', hiringDate: null, status: 1 },
+    { id: 'v-013', title: 'Arquitecto de Software', description: 'Diseño de soluciones escalables, revisión de código, decisiones tecnológicas y mentoring al equipo.', profile: 'Arquitecturas distribuidas, microservicios, .NET / Java, +8 años.', publicationDate: '2026-02-10', hiringDate: '2026-04-01', status: 1 },
+    { id: 'v-014', title: 'Asistente Administrativa RRHH', description: 'Apoyo en procesos de nómina, onboarding de personal, mantenimiento de expedientes y coordinación de capacitaciones.', profile: 'Administración de empresas, Excel avanzado, discreción, organización.', publicationDate: '2026-02-20', hiringDate: '2026-03-10', status: 3 },
+  ];
+
+  let editingId = null;
+  let deleteTargetId = null;
+  let currentView = 'table';
+
+  /* ── Render ── */
+  function formatDate(iso) {
+    if (!iso) return '<span class="text-muted">—</span>';
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function statusBadge(status) {
+    const s = statusMap[status] || { label: 'Desconocido', cls: 'badge-neutral' };
+    return `<span class="badge badge-dot ${s.cls}">${s.label}</span>`;
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    if (!data.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+        <h3>Sin resultados</h3><p>No se encontraron vacantes con los filtros aplicados.</p>
+      </div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(v => `
+      <tr>
+        <td>
+          <div class="td-title">${v.title}</div>
+          <div class="td-sub font-mono">#${v.id}</div>
+        </td>
+        <td><div class="truncate text-muted" title="${v.profile}">${v.profile}</div></td>
+        <td>${formatDate(v.publicationDate)}</td>
+        <td>${formatDate(v.hiringDate)}</td>
+        <td>${statusBadge(v.status)}</td>
+        <td>
+          <div class="action-row" style="justify-content:flex-end;">
+            <button class="btn btn-ghost btn-sm" onclick="viewDetail('${v.id}')" title="Ver detalle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="openModal('edit','${v.id}')" title="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Editar
+            </button>
+            <button class="btn btn-error-outline btn-sm" onclick="confirmDelete('${v.id}')" title="Eliminar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderCards(data) {
+    const grid = document.getElementById('cardGrid');
+    if (!data.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+        <h3>Sin resultados</h3><p>No se encontraron vacantes.</p>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = data.map(v => `
+      <div class="vacant-card">
+        <div class="vacant-card-header">
+          <div>
+            <div class="vacant-card-title">${v.title}</div>
+            <div class="meta-row" style="margin-top:4px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Publicado ${formatDate(v.publicationDate)}
+            </div>
+          </div>
+          ${statusBadge(v.status)}
+        </div>
+        <div class="vacant-card-body">${v.description.substring(0, 110)}${v.description.length > 110 ? '…' : ''}</div>
+        <div style="font-size:.75rem; color:#8899bb;">
+          <strong style="color:#374151;">Perfil:</strong> ${v.profile.substring(0, 80)}…
+        </div>
+        <div class="vacant-card-footer">
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${v.hiringDate ? 'Contratación ' + formatDate(v.hiringDate) : 'Fecha TBD'}
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="btn btn-ghost btn-sm" onclick="viewDetail('${v.id}')">Ver</button>
+            <button class="btn btn-outline btn-sm" onclick="openModal('edit','${v.id}')">Editar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const sf = document.getElementById('statusFilter').value;
+    return vacants.filter(v => {
+      const matchQ = !q || v.title.toLowerCase().includes(q) || v.profile.toLowerCase().includes(q) || v.description.toLowerCase().includes(q);
+      const matchS = !sf || statusMap[v.status]?.label === sf;
+      return matchQ && matchS;
+    });
+  }
+
+  function filterTable() {
+    const data = getFiltered();
+    renderTable(data);
+    renderCards(data);
+    document.getElementById('paginationInfo').textContent = `Mostrando ${Math.min(data.length, 8)} de ${data.length} resultado${data.length !== 1 ? 's' : ''}`;
+  }
+
+  /* ── View Toggle ── */
+  function switchView(v) {
+    currentView = v;
+    document.getElementById('tableView').classList.toggle('hidden', v !== 'table');
+    document.getElementById('cardView').classList.toggle('hidden', v !== 'card');
+    document.getElementById('tableViewBtn').classList.toggle('active', v === 'table');
+    document.getElementById('cardViewBtn').classList.toggle('active', v === 'card');
+  }
+
+  /* ── Modal ── */
+  function openModal(mode, id) {
+    editingId = null;
+    clearFormErrors();
+    if (mode === 'create') {
+      document.getElementById('modalTitle').textContent = 'Nueva Vacante';
+      document.getElementById('f_title').value = '';
+      document.getElementById('f_description').value = '';
+      document.getElementById('f_profile').value = '';
+      document.getElementById('f_status').value = '1';
+      document.getElementById('f_hiringDate').value = '';
+    } else {
+      const v = vacants.find(x => x.id === id);
+      if (!v) return;
+      editingId = id;
+      document.getElementById('modalTitle').textContent = 'Editar Vacante';
+      document.getElementById('f_title').value = v.title;
+      document.getElementById('f_description').value = v.description;
+      document.getElementById('f_profile').value = v.profile;
+      document.getElementById('f_status').value = v.status;
+      document.getElementById('f_hiringDate').value = v.hiringDate || '';
+    }
+    document.getElementById('vacantModal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  /* ── Form Validation ── */
+  function clearFormErrors() {
+    ['title','description','profile'].forEach(f => {
+      document.getElementById(`err_${f}`).style.display = 'none';
+      document.getElementById(`f_${f}`).style.borderColor = '';
+    });
+  }
+
+  function validateForm() {
+    let valid = true;
+    ['title','description','profile'].forEach(f => {
+      const el = document.getElementById(`f_${f}`);
+      const err = document.getElementById(`err_${f}`);
+      if (!el.value.trim()) {
+        err.style.display = 'block';
+        el.style.borderColor = 'var(--error)';
+        valid = false;
+      } else {
+        err.style.display = 'none';
+        el.style.borderColor = '';
+      }
+    });
+    return valid;
+  }
+
+  /* ── Save ── */
+  function saveVacant() {
+    if (!validateForm()) return;
+    const payload = {
+      title: document.getElementById('f_title').value.trim(),
+      description: document.getElementById('f_description').value.trim(),
+      profile: document.getElementById('f_profile').value.trim(),
+      status: parseInt(document.getElementById('f_status').value),
+      hiringDate: document.getElementById('f_hiringDate').value || null,
+    };
+
+    const btn = document.getElementById('saveBtn');
+    btn.classList.add('btn-disabled');
+    btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div> Guardando…';
+
+    // Simulate API call
+    setTimeout(() => {
+      if (editingId) {
+        const idx = vacants.findIndex(v => v.id === editingId);
+        if (idx !== -1) vacants[idx] = { ...vacants[idx], ...payload };
+        showToast('success', 'Vacante actualizada correctamente.');
+      } else {
+        const newId = 'v-' + String(vacants.length + 1).padStart(3,'0');
+        vacants.unshift({ id: newId, publicationDate: new Date().toISOString().split('T')[0], ...payload });
+        showToast('success', 'Vacante creada exitosamente.');
+      }
+      btn.classList.remove('btn-disabled');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg> Guardar';
+      closeModal('vacantModal');
+      filterTable();
+    }, 900);
+  }
+
+  /* ── Delete ── */
+  function confirmDelete(id) {
+    const v = vacants.find(x => x.id === id);
+    if (!v) return;
+    deleteTargetId = id;
+    document.getElementById('confirmVacantName').textContent = `"${v.title}"`;
+    document.getElementById('confirmModal').classList.add('open');
+    document.getElementById('confirmDeleteBtn').onclick = () => doDelete(id);
+  }
+
+  function doDelete(id) {
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.classList.add('btn-disabled');
+    btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;border-top-color:var(--error);"></div> Eliminando…';
+    setTimeout(() => {
+      vacants = vacants.filter(v => v.id !== id);
+      btn.classList.remove('btn-disabled');
+      btn.innerHTML = 'Sí, eliminar';
+      closeModal('confirmModal');
+      filterTable();
+      showToast('success', 'Vacante eliminada.');
+    }, 700);
+  }
+
+  /* ── Detail ── */
+  function viewDetail(id) {
+    const v = vacants.find(x => x.id === id);
+    if (!v) return;
+    const s = statusMap[v.status] || { label: 'Desconocido', cls: 'badge-neutral' };
+    document.getElementById('detail_title').textContent = v.title;
+    document.getElementById('detailBody').innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;">
+        <span class="badge badge-dot ${s.cls}">${s.label}</span>
+        <span class="font-mono">#${v.id}</span>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Descripción</div>
+        <p style="font-size:.875rem;color:#374151;line-height:1.6;">${v.description}</p>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Perfil requerido</div>
+        <p style="font-size:.875rem;color:#374151;line-height:1.6;">${v.profile}</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <div class="form-label">Fecha de publicación</div>
+          <p style="font-size:.875rem;color:#374151;">${formatDate(v.publicationDate)}</p>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Fecha de contratación</div>
+          <p style="font-size:.875rem;color:#374151;">${v.hiringDate ? formatDate(v.hiringDate) : '—'}</p>
+        </div>
+      </div>
+    `;
+    document.getElementById('detailModal').classList.add('open');
+  }
+
+  /* ── Toast ── */
+  function showToast(type, msg) {
+    const icons = {
+      success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+      error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+    };
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.innerHTML = `${icons[type]}<span>${msg}</span>`;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  /* ── Close on overlay click ── */
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  /* ── Init ── */
+  renderTable(vacants);
+  renderCards(vacants);
+  document.getElementById('paginationInfo').textContent = `Mostrando ${Math.min(vacants.length, 8)} de ${vacants.length} resultados`;
+</script>
+</body>
+</html>
