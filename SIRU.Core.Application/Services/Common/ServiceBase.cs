@@ -24,14 +24,14 @@ namespace SIRU.Core.Application.Services.Common
             _mapper = mapper;
         }
 
-        public async Task<PaginatedResponse<TDto>> Paginate(Pagination pagination)
+        public async virtual Task<PaginatedResponse<TDto>> Paginate(Pagination pagination)
         {
             var paginatedEntities = await _repository.Paginate(pagination);
             var paginatedDtos = paginatedEntities.Map(_mapper.Map<TDto>);
             return paginatedDtos;
         }
 
-        public async Task<Result<TDto>> AddAsync(TInsertDto dto)
+        public async virtual Task<Result<TDto>> AddAsync(TInsertDto dto)
         {
             var entity = _mapper.Map<TEntity>(dto);
             var resPreProcessing = await InsertPreProcessing(entity, dto);
@@ -50,7 +50,7 @@ namespace SIRU.Core.Application.Services.Common
             return Result<TEntity>.Success(entity);
         }
 
-        public async Task<Result> DeleteAsync(TID id)
+        public async virtual Task<Result> DeleteAsync(TID id)
         {
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
@@ -62,10 +62,10 @@ namespace SIRU.Core.Application.Services.Common
 
         }
 
-        public async Task<IEnumerable<TDto>> GetAllAsync()
+        public async virtual Task<IEnumerable<TDto>> GetAllAsync()
             => (await _repository.GetAllAsync()).Select(_mapper.Map<TDto>);
 
-        public async Task<Result<TDto>> GetByIdAsync(TID id)
+        public async virtual Task<Result<TDto>> GetByIdAsync(TID id)
         {
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
@@ -76,7 +76,7 @@ namespace SIRU.Core.Application.Services.Common
             return Result<TDto>.Success(dto);
         }
 
-        public async Task<Result<TDto>> UpdateAsync(TID id, TUpdateDto dto)
+        public async virtual Task<Result<TDto>> UpdateAsync(TID id, TUpdateDto dto)
         {
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
