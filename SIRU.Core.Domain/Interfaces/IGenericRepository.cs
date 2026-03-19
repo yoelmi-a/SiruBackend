@@ -1,3 +1,4 @@
+using SIRU.Core.Domain.Common.Pagination;
 using System.Linq.Expressions;
 
 namespace SIRU.Core.Domain.Interfaces
@@ -10,5 +11,9 @@ namespace SIRU.Core.Domain.Interfaces
         Task AddAsync(T entity);
         void Update(T entity);
         void Remove(T entity);
+        Task<PaginatedResponse<T>> Paginate(Pagination pagination);
+        Task<PaginatedResponse<T>> PaginateWhere(Pagination pagination, Expression<Func<T, bool>> predicate);
+        Task<T> UpdateAsync(T entity);
+        Task RemoveAsync(T entity);
     }
 }

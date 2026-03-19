@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Core.Domain.Interfaces;
 using SIRU.Infrastructure.Persistence.Contexts;
+using SIRU.Infrastructure.Persistence.Helpers;
 using System.Linq.Expressions;
 
 namespace SIRU.Infrastructure.Persistence.Repositories
@@ -20,6 +22,12 @@ namespace SIRU.Infrastructure.Persistence.Repositories
         {
             return await _dbSet.ToListAsync();
         }
+
+        public async Task<PaginatedResponse<T>> Paginate(Pagination pagination)
+            => await _dbSet.PaginateAsync(pagination);
+
+        public async Task<PaginatedResponse<T>> PaginateWhere(Pagination pagination, Expression<Func<T, bool>> predicate)
+            => await _dbSet.Where(predicate).PaginateAsync(pagination);
 
         public async Task<T?> GetByIdAsync<TKey>(TKey id)
         {
@@ -52,10 +60,24 @@ namespace SIRU.Infrastructure.Persistence.Repositories
             _context.SaveChanges();
         }
 
+        public async Task<T> UpdateAsync(T entity)
+        {
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return entity;
+        } 
+
         public void Remove(T entity)
         {
             _dbSet.Remove(entity);
             _context.SaveChanges();
+        }
+
+        public async Task RemoveAsync(T entity)
+        {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }
