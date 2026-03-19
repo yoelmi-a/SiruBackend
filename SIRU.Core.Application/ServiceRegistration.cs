@@ -11,6 +11,8 @@ namespace SIRU.Core.Application
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IVacantService, VacantService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IPositionService, PositionService>();
         }
     }
 }

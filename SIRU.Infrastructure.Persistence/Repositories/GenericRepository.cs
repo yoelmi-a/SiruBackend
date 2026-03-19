@@ -45,13 +45,6 @@ namespace SIRU.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(T entity)
-        {
-            _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
         // Si prefieres mantener Update síncrono como en la interfaz:
         public void Update(T entity)
         {
