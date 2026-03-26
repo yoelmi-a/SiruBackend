@@ -24,7 +24,7 @@
         /// <param name="value">Valor a almacenar</param>
         /// <param name="isSuccess">Estado de la operación</param>
         /// <param name="errors">Errores en caso de fallos</param>
-        public Result(bool isSuccess, ICollection<string>? errors, T? value = default) : base(isSuccess, errors)
+        internal Result(bool isSuccess, ICollection<string>? errors, T? value = default) : base(isSuccess, errors)
         {
             Value = value;
         }
