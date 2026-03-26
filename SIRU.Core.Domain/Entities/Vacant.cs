@@ -10,7 +10,6 @@ namespace SIRU.Core.Domain.Entities
         public required DateTime PublicationDate { get; set; }
         public DateTime? HiringDate { get; set; }
         public required int Status { get; set; }
-
         public ICollection<VacancyCandidate>? Candidates { get; set; }
     }
 }

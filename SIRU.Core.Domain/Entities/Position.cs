@@ -7,7 +7,6 @@ namespace SIRU.Core.Domain.Entities
         public required string Name { get; set; }
         public required decimal Salary { get; set; }
         public required int DepartmentId { get; set; }
-
         public Department? Department { get; set; }
         public ICollection<EmployeePosition>? Employees { get; set; }
     }
