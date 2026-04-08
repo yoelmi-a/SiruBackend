@@ -13,6 +13,7 @@ namespace SIRU.Core.Application
             services.AddScoped<IVacantService, VacantService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<ICandidateService, CandidateService>();
         }
     }
 }

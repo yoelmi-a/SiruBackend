@@ -18,6 +18,7 @@ namespace SIRU.Infrastructure.Persistence
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
+            services.AddScoped<ICandidateRepository, CandidateRepository>();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using SIRU.Core.Domain.Common;
+using SIRU.Core.Domain.Common;
 
 namespace SIRU.Core.Domain.Entities
 {
