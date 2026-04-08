@@ -1,16 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
-using SIRU.Core.Application.Interfaces.Vacant;
-using SIRU.Core.Application.Services.Vacant;
-using System.Reflection;
+using SIRU.Core.Application.Interfaces.Users;
+using SIRU.Core.Application.Services.Users;
 
 namespace SIRU.Core.Application
 {
     public static class ServiceRegistration
     {
-        public static void AddApplicationLayer(this IServiceCollection services)
+        public static void AddApplicationLayerIoc(this IServiceCollection services)
         {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddScoped<IVacantService, VacantService>();
+            #region Services
+            // Users
+            services.AddScoped<IUserService, UserService>();
+            #endregion
         }
     }
 }

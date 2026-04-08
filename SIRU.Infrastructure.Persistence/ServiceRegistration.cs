@@ -9,13 +9,17 @@ namespace SIRU.Infrastructure.Persistence
 {
     public static class ServiceRegistration
     {
-        public static void AddPersistenceLayer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddPersistenceLayerIoc(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 m => m.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            #region Repositories
+            //Users
+            services.AddScoped<IUserRepository, UserRepository>();
+            #endregion
         }
     }
 }
