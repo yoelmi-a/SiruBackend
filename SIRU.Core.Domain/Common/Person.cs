@@ -1,4 +1,4 @@
-namespace SIRU.Core.Domain.Common
+﻿namespace SIRU.Core.Domain.Common
 {
     public class Person : BaseEntity<string>
     {
