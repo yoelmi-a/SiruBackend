@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SIRU.Core.Domain.Common.Pagination;
+using Microsoft.Extensions.Configuration;
+using SIRU.Core.Domain.Common;
+using SIRU.Core.Domain.Common.Results;
 using SIRU.Core.Domain.Interfaces;
 using SIRU.Infrastructure.Persistence.Contexts;
 using SIRU.Infrastructure.Persistence.Helpers;
@@ -7,20 +10,21 @@ using System.Linq.Expressions;
 
 namespace SIRU.Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey> where TEntity : class
     {
-        protected readonly ApplicationDbContext _context;
-        protected readonly DbSet<T> _dbSet;
-
-        public GenericRepository(ApplicationDbContext context)
+        private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _config;
+        public GenericRepository(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
-            _dbSet = context.Set<T>();
+            _config = config;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<TEntity> AddAsync(TEntity entity)
         {
-            return await _dbSet.ToListAsync();
+            await _context.Set<TEntity>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<PaginatedResponse<T>> Paginate(Pagination pagination)
@@ -31,17 +35,25 @@ namespace SIRU.Infrastructure.Persistence.Repositories
 
         public async Task<T?> GetByIdAsync<TKey>(TKey id)
         {
-            return await _dbSet.FindAsync(id);
+            return await _context.Set<TEntity>().AnyAsync(filter);
         }
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<Result<TEntity>> UpdateAsync(TEntity entity, TKey id)
         {
-            return await _dbSet.Where(predicate).ToListAsync();
+            var entry = await _context.Set<TEntity>().FindAsync(id);
+
+            if (entry != null)
+            {
+                _context.Entry(entry).CurrentValues.SetValues(entity);
+                await _context.SaveChangesAsync();
+                return Result.Success(entity);
+            }
+
+            return Result.Failure<TEntity>(_config[$"{nameof(TEntity)}Errors:NotFound"] ?? "");
         }
 
-        public async Task AddAsync(T entity)
+        public virtual async Task SaveChangesAsync()
         {
-            await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
@@ -61,10 +73,29 @@ namespace SIRU.Infrastructure.Persistence.Repositories
             return entity;
         } 
 
-        public void Remove(T entity)
+        public virtual async Task<PagedResult<TEntity>> GetAllListAsync(PaginationParameters parameters)
         {
-            _dbSet.Remove(entity);
-            _context.SaveChanges();
+            var totalCount = await _context.Set<TEntity>().CountAsync();
+
+            var entities = await _context.Set<TEntity>()
+                .Skip((parameters.Page - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<TEntity>(entities, parameters.Page, parameters.PageSize, totalCount);
+        }
+
+        public virtual async Task<PagedResult<TEntity>> GetAllListAsync(PaginationParameters parameters, Expression<Func<TEntity, bool>> filter)
+        {
+            var totalCount = await _context.Set<TEntity>().Where(filter).CountAsync();
+
+            var entities = await _context.Set<TEntity>()
+                .Where(filter)
+                .Skip((parameters.Page - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<TEntity>(entities, parameters.Page, parameters.PageSize, totalCount);
         }
 
         public async Task RemoveAsync(T entity)

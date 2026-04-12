@@ -18,6 +18,7 @@ namespace SIRU.Infrastructure.Persistence.Contexts
         public DbSet<Evaluation> Evaluations { get; set; }
         public DbSet<Criterion> Criteria { get; set; }
         public DbSet<EvaluationCriterion> EvaluationCriteria { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
