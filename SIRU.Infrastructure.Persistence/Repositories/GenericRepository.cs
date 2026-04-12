@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using SIRU.Core.Domain.Common.Pagination;
 using Microsoft.Extensions.Configuration;
 using SIRU.Core.Domain.Common;
 using SIRU.Core.Domain.Common.Results;
 using SIRU.Core.Domain.Interfaces;
 using SIRU.Infrastructure.Persistence.Contexts;
+using SIRU.Infrastructure.Persistence.Helpers;
 using System.Linq.Expressions;
 
 namespace SIRU.Infrastructure.Persistence.Repositories
@@ -25,7 +27,13 @@ namespace SIRU.Infrastructure.Persistence.Repositories
             return entity;
         }
 
-        public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter)
+        public async Task<PaginatedResponse<T>> Paginate(Pagination pagination)
+            => await _dbSet.PaginateAsync(pagination);
+
+        public async Task<PaginatedResponse<T>> PaginateWhere(Pagination pagination, Expression<Func<T, bool>> predicate)
+            => await _dbSet.Where(predicate).PaginateAsync(pagination);
+
+        public async Task<T?> GetByIdAsync<TKey>(TKey id)
         {
             return await _context.Set<TEntity>().AnyAsync(filter);
         }
@@ -49,22 +57,21 @@ namespace SIRU.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public virtual async Task<TEntity?> GetByIdAsync(TKey id)
+        // Si prefieres mantener Update síncrono como en la interfaz:
+        public void Update(T entity)
         {
-            return await _context.Set<TEntity>().FindAsync(id);
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            _context.SaveChanges();
         }
 
-        public async Task<ICollection<TEntity>> GetAllAsync()
+        public async Task<T> UpdateAsync(T entity)
         {
-            var entities = await _context.Set<TEntity>().ToListAsync();
-            return entities;
-        }
-
-        public async Task<ICollection<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter)
-        {
-            var entities = await _context.Set<TEntity>().Where(filter).ToListAsync();
-            return entities;
-        }
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return entity;
+        } 
 
         public virtual async Task<PagedResult<TEntity>> GetAllListAsync(PaginationParameters parameters)
         {
@@ -89,6 +96,12 @@ namespace SIRU.Infrastructure.Persistence.Repositories
                 .ToListAsync();
 
             return new PagedResult<TEntity>(entities, parameters.Page, parameters.PageSize, totalCount);
+        }
+
+        public async Task RemoveAsync(T entity)
+        {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

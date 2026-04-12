@@ -8,10 +8,12 @@ namespace SIRU.Core.Application
     {
         public static void AddApplicationLayerIoc(this IServiceCollection services)
         {
-            #region Services
-            // Users
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddScoped<IVacantService, VacantService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IUserService, UserService>();
-            #endregion
         }
     }
 }

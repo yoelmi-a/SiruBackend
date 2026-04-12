@@ -15,11 +15,11 @@ namespace SIRU.Infrastructure.Persistence
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 m => m.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-
-            #region Repositories
-            //Users
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IPositionRepository, PositionRepository>();
+            services.AddScoped<ICandidateRepository, CandidateRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            #endregion
         }
     }
 }
