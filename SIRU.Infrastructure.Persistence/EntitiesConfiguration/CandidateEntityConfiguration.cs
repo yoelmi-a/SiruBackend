@@ -9,7 +9,7 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
         public void Configure(EntityTypeBuilder<Candidate> builder)
         {
             builder.ToTable("Candidates");
-            builder.HasKey(c => c.Id);
+            builder.HasKey(c => c.Id); 
             builder.Property(c => c.Names).IsRequired().HasMaxLength(100);
             builder.Property(c => c.LastNames).IsRequired().HasMaxLength(100);
             builder.Property(c => c.Email).IsRequired().HasMaxLength(150);

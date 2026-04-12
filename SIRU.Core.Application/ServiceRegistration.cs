@@ -1,5 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
+using SIRU.Core.Application.Interfaces.Candidates;
+using SIRU.Core.Application.Interfaces.Departments;
+using SIRU.Core.Application.Interfaces.Positions;
 using SIRU.Core.Application.Interfaces.Vacant;
+using SIRU.Core.Application.Services.Candidates;
+using SIRU.Core.Application.Services.Departments;
+using SIRU.Core.Application.Services.Positions;
 using SIRU.Core.Application.Services.Vacant;
 using System.Reflection;
 
