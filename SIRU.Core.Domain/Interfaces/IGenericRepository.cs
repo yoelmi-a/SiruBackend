@@ -1,4 +1,3 @@
-using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Core.Domain.Common;
 using SIRU.Core.Domain.Common.Results;
 using System.Linq.Expressions;
@@ -8,15 +7,14 @@ namespace SIRU.Core.Domain.Interfaces
     public interface IGenericRepository<TEntity, TKey>
         where TEntity : class
     {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync<TKey>(TKey id);
-        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
-        Task AddAsync(T entity);
-        void Update(T entity);
-        void Remove(T entity);
-        Task<PaginatedResponse<T>> Paginate(Pagination pagination);
-        Task<PaginatedResponse<T>> PaginateWhere(Pagination pagination, Expression<Func<T, bool>> predicate);
-        Task<T> UpdateAsync(T entity);
-        Task RemoveAsync(T entity);
+        Task<TEntity> AddAsync(TEntity entity);
+        Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter);
+        Task<Result<TEntity>> UpdateAsync(TEntity entity, TKey id);
+        Task<TEntity?> GetByIdAsync(TKey id);
+        Task<ICollection<TEntity>> GetAllAsync();
+        Task<ICollection<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter);
+        Task<PagedResult<TEntity>> GetAllListAsync(PaginationParameters parameters);
+        Task<PagedResult<TEntity>> GetAllListAsync(PaginationParameters parameters, Expression<Func<TEntity, bool>> filter);
+        Task SaveChangesAsync();
     }
 }
