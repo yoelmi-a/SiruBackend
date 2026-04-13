@@ -11,6 +11,11 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
             builder.ToTable("Criteria");
             builder.HasKey(c => c.Id);
             builder.Property(c => c.Name).IsRequired().HasMaxLength(150);
+
+            builder.HasOne(c => c.Position)
+                .WithMany(p => p.Criteria)
+                .HasForeignKey(c => c.PositionId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

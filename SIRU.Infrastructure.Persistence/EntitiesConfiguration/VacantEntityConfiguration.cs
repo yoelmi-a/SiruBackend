@@ -14,6 +14,11 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
             builder.Property(v => v.Description).IsRequired();
             builder.Property(v => v.Profile).IsRequired();
             builder.Property(v => v.Status).IsRequired();
+
+            builder.HasOne(v => v.Position)
+                .WithMany(p => p.Vacants)
+                .HasForeignKey(v => v.PositionId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

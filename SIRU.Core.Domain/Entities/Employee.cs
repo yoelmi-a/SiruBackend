@@ -10,6 +10,5 @@ namespace SIRU.Core.Domain.Entities
         public required bool Status { get; set; }
 
         public ICollection<EmployeePosition>? PositionsOccupied { get; set; }
-        public ICollection<Evaluation>? Evaluations { get; set; }
     }
 }

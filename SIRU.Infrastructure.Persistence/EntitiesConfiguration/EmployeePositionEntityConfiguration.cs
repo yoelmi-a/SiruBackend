@@ -9,7 +9,10 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
         public void Configure(EntityTypeBuilder<EmployeePosition> builder)
         {
             builder.ToTable("EmployeePositions");
-            builder.HasKey(ep => new { ep.PositionId, ep.EmployeeId, ep.StartDate });
+            builder.HasKey(ep => ep.Id);
+
+            builder.Property(ep => ep.StartDate).IsRequired();
+            builder.Property(ep => ep.EndDate).IsRequired(false);
 
             builder.HasOne(ep => ep.Employee)
                 .WithMany(e => e.PositionsOccupied)

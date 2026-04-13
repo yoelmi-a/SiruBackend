@@ -12,9 +12,10 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Date).IsRequired();
 
-            builder.HasOne(e => e.Employee)
-                .WithMany(emp => emp.Evaluations)
-                .HasForeignKey(e => e.EmployeeId);
+            builder.HasOne(e => e.EmployeePosition)
+                .WithMany(ep => ep.Evaluations)
+                .HasForeignKey(e => e.EmployeePositionId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -1,12 +1,16 @@
-﻿namespace SIRU.Core.Domain.Entities
+using SIRU.Core.Domain.Common;
+
+namespace SIRU.Core.Domain.Entities
 {
-    public class EmployeePosition
+    public class EmployeePosition : BaseEntity<int>
     {
         public required int PositionId { get; set; }
         public required string EmployeeId { get; set; }
         public required DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public Employee? Employee { get; set; }
         public Position? Position { get; set; }
+        public ICollection<Evaluation>? Evaluations { get; set; }
     }
 }

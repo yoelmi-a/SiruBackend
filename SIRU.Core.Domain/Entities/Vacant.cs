@@ -1,4 +1,5 @@
-﻿using SIRU.Core.Domain.Common;
+using SIRU.Core.Domain.Common;
+using SIRU.Core.Domain.Common.Enums;
 
 namespace SIRU.Core.Domain.Entities
 {
@@ -9,7 +10,10 @@ namespace SIRU.Core.Domain.Entities
         public required string Profile { get; set; }
         public required DateTime PublicationDate { get; set; }
         public DateTime? HiringDate { get; set; }
-        public required int Status { get; set; }
+        public required VacantStatus Status { get; set; }
+
+        public required int PositionId { get; set; }
+        public Position? Position { get; set; }
 
         public ICollection<VacancyCandidate>? Candidates { get; set; }
     }

@@ -21,6 +21,7 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
 
             builder.Property(vc => vc.Score).IsRequired();
             builder.Property(vc => vc.Status).IsRequired();
+            builder.Property(vc => vc.IsSelected).IsRequired().HasDefaultValue(false);
         }
     }
 }

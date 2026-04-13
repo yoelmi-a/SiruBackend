@@ -1,4 +1,4 @@
-﻿using SIRU.Core.Domain.Common;
+using SIRU.Core.Domain.Common;
 
 namespace SIRU.Core.Domain.Entities
 {
@@ -10,5 +10,7 @@ namespace SIRU.Core.Domain.Entities
 
         public Department? Department { get; set; }
         public ICollection<EmployeePosition>? Employees { get; set; }
+        public ICollection<Vacant>? Vacants { get; set; }
+        public ICollection<Criterion>? Criteria { get; set; }
     }
 }
