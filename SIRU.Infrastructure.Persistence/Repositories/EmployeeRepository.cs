@@ -33,4 +33,16 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
             .OrderByDescending(ep => ep.StartDate)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<Evaluation>> GetEmployeeEvaluationsAsync(string employeeId)
+    {
+        return await _dbSet
+            .Where(e => e.Id == employeeId)
+            .SelectMany(e => e.PositionsOccupied!)
+            .SelectMany(ep => ep.Evaluations!)
+            .Include(ev => ev.Criteria!)
+                .ThenInclude(ec => ec.Criterion!)
+            .OrderByDescending(ev => ev.Date)
+            .ToListAsync();
+    }
 }

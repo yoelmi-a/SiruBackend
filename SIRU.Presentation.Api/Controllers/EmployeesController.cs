@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIRU.Core.Application.Dtos.Employees;
+using SIRU.Core.Application.Dtos.Evaluations;
+using SIRU.Core.Application.Interfaces.Evaluations;
 using SIRU.Core.Application.Interfaces.Employees;
 using SIRU.Core.Domain.Common.Pagination;
 
@@ -9,13 +11,15 @@ namespace SIRU.Presentation.Api.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class EmployeesController : ControllerBase
-    {
-        private readonly IEmployeeService _employeeService;
+{
+    private readonly IEmployeeService _employeeService;
+    private readonly IEvaluationService _evaluationService;
 
-        public EmployeesController(IEmployeeService employeeService)
-        {
-            _employeeService = employeeService;
-        }
+    public EmployeesController(IEmployeeService employeeService, IEvaluationService evaluationService)
+    {
+        _employeeService = employeeService;
+        _evaluationService = evaluationService;
+    }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<EmployeeListDto>))]
@@ -101,6 +105,19 @@ namespace SIRU.Presentation.Api.Controllers
         public async Task<IActionResult> GetHistory(string id)
         {
             var result = await _employeeService.GetHistoryAsync(id);
+            if (!result.IsSuccess)
+            {
+                return NotFound(new { Errors = result.Error });
+            }
+            return Ok(result.Value);
+        }
+
+        [HttpGet("{id}/evaluations")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EvaluationHistoryDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetEvaluations(string id)
+        {
+            var result = await _evaluationService.GetByEmployeeIdAsync(id);
             if (!result.IsSuccess)
             {
                 return NotFound(new { Errors = result.Error });

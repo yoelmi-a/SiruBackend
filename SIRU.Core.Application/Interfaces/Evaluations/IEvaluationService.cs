@@ -7,4 +7,6 @@ namespace SIRU.Core.Application.Interfaces.Evaluations;
 public interface IEvaluationService
 {
     Task<Result<EvaluationDto>> AddAsync(EvaluationInsertDto dto);
+
+    Task<Result<IEnumerable<EvaluationHistoryDto>>> GetByEmployeeIdAsync(string employeeId);
 }

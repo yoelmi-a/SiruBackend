@@ -267,13 +267,13 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** Medium
 **Estimate:** 2 SP
-**Status:** To Do (Pending HU-11)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/employees/{id}/evaluations` returns all evaluations for the employee.
-- [ ] Each item includes: evaluation date, average score, list of criteria with scores and observations.
-- [ ] Results are sorted by evaluation date descending.
-- [ ] Returns `404 Not Found` if the employee does not exist.
+- [x] `GET /api/employees/{id}/evaluations` returns all evaluations for the employee.
+- [x] Each item includes: evaluation date, average score, list of criteria with scores and observations.
+- [x] Results are sorted by evaluation date descending.
+- [x] Returns `404 Not Found` if the employee does not exist.
 
 **Linked Requirements:** FR-EVAL-007, BR-EVAL-07
 
@@ -287,12 +287,12 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 2 SP
-**Status:** To Do (Pending HU-11)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] The average is computed as `sum(scores) / count(criteria)` and rounded to two decimal places.
-- [ ] The average is returned in the evaluation DTO as `averageScore`.
-- [ ] Recomputing scores by modifying an evaluation is not allowed (immutable once created).
+- [x] The average is computed as `sum(scores) / count(criteria)` and rounded to two decimal places.
+- [x] The average is returned in the evaluation DTO as `averageScore`.
+- [x] Recomputing scores by modifying an evaluation is not allowed (immutable once created).
 
 **Linked Requirements:** FR-EVAL-005, BR-EVAL-05
 

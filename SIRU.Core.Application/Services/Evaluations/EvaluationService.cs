@@ -84,4 +84,37 @@ public class EvaluationService : IEvaluationService
 
         return Result<EvaluationDto>.Success(dtoResult);
     }
+
+    public async Task<Result<IEnumerable<EvaluationHistoryDto>>> GetByEmployeeIdAsync(string employeeId)
+    {
+        var employee = await _employeeRepository.GetByIdAsync(employeeId);
+        if (employee == null)
+        {
+            return Result.Failure<IEnumerable<EvaluationHistoryDto>>(new List<string> { "Empleado no encontrado." });
+        }
+
+        var evaluations = await _employeeRepository.GetEmployeeEvaluationsAsync(employeeId);
+
+        var dtos = evaluations.Select(ev =>
+        {
+            var positionName = ev.EmployeePositionId > 0
+                ? (ev.EmployeePosition?.Position?.Name ?? "N/A")
+                : "N/A";
+
+            return new EvaluationHistoryDto
+            {
+                Id = ev.Id,
+                Date = ev.Date,
+                AverageScore = ev.AverageScore,
+                PositionName = positionName,
+                Criteria = (ev.Criteria ?? []).Select(c => new EvaluationHistoryCriterionDto
+                {
+                    Name = c.Criterion?.Name ?? "N/A",
+                    Score = c.Score,
+                    Observation = c.Observation
+                }).ToList()
+            };
+        }).ToList();
+        return Result.Success<IEnumerable<EvaluationHistoryDto>>(dtos);
+    }
 }
