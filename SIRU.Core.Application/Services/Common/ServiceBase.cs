@@ -1,11 +1,8 @@
-﻿using AutoMapper;
+using Mapster;
 using SIRU.Core.Application.Interfaces.Common;
 using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Core.Domain.Common.Results;
 using SIRU.Core.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIRU.Core.Application.Services.Common
 {
@@ -15,38 +12,39 @@ namespace SIRU.Core.Application.Services.Common
      where TInsertDto : class
      where TUpdateDto : class
     {
-        private readonly IGenericRepository<TEntity> _repository;
-        private readonly IMapper _mapper;
+        protected readonly IGenericRepository<TEntity> _repository;
 
-        protected ServiceBase(IGenericRepository<TEntity> repository, IMapper mapper)
+        protected ServiceBase(IGenericRepository<TEntity> repository)
         {
             _repository = repository;
-            _mapper = mapper;
         }
 
         public async virtual Task<PaginatedResponse<TDto>> Paginate(Pagination pagination)
         {
             var paginatedEntities = await _repository.Paginate(pagination);
-            var paginatedDtos = paginatedEntities.Map(_mapper.Map<TDto>);
+            var paginatedDtos = new PaginatedResponse<TDto>
+            {
+                Items = paginatedEntities.Items.Select(e => e.Adapt<TDto>()),
+                Pagination = paginatedEntities.Pagination
+            };
             return paginatedDtos;
         }
 
         public async virtual Task<Result<TDto>> AddAsync(TInsertDto dto)
         {
-            var entity = _mapper.Map<TEntity>(dto);
+            var entity = dto.Adapt<TEntity>();
             var resPreProcessing = await InsertPreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
                 return Result.Failure<TDto>(resPreProcessing.Error.ToList());
             }
             await _repository.AddAsync(entity);
-            var resultDto = _mapper.Map<TDto>(entity);
+            var resultDto = entity.Adapt<TDto>();
             return Result<TDto>.Success(resultDto);
         }
 
         protected async virtual Task<Result<TEntity>> InsertPreProcessing(TEntity entity, TInsertDto dto)
         {
-            // Implement any necessary pre-processing logic here
             return Result<TEntity>.Success(entity);
         }
 
@@ -59,11 +57,10 @@ namespace SIRU.Core.Application.Services.Common
             }
             await _repository.RemoveAsync(entity);
             return Result.Success();
-
         }
 
         public async virtual Task<IEnumerable<TDto>> GetAllAsync()
-            => (await _repository.GetAllAsync()).Select(_mapper.Map<TDto>);
+            => (await _repository.GetAllAsync()).Select(e => e.Adapt<TDto>());
 
         public async virtual Task<Result<TDto>> GetByIdAsync(TID id)
         {
@@ -72,7 +69,7 @@ namespace SIRU.Core.Application.Services.Common
             {
                 return Result.Failure<TDto>(new List<string> { "Entity not found." });
             }
-            var dto = _mapper.Map<TDto>(entity);
+            var dto = entity.Adapt<TDto>();
             return Result<TDto>.Success(dto);
         }
 
@@ -83,20 +80,19 @@ namespace SIRU.Core.Application.Services.Common
             {
                 return Result.Failure<TDto>(new List<string> { "Entity not found." });
             }
-            var mapped = _mapper.Map(dto, entity);
-            var resPreProcessing = await UpdatePreProcessing(mapped, dto);
+            dto.Adapt(entity);
+            var resPreProcessing = await UpdatePreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
                 return Result.Failure<TDto>(resPreProcessing.Error.ToList());
             }
-            await _repository.UpdateAsync(mapped);
-            var resultDto = _mapper.Map<TDto>(mapped);
+            await _repository.UpdateAsync(entity);
+            var resultDto = entity.Adapt<TDto>();
             return Result<TDto>.Success(resultDto);
         }
 
         protected async virtual Task<Result<TEntity>> UpdatePreProcessing(TEntity entity, TUpdateDto dto)
         {
-            // Implement any necessary pre-processing logic here
             return Result<TEntity>.Success(entity);
         }
     }

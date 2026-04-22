@@ -1,5 +1,4 @@
-using AutoMapper;
-using SIRU.Core.Application.Dtos.Position;
+using SIRU.Core.Application.Dtos.Positions;
 using SIRU.Core.Application.Interfaces.Positions;
 using SIRU.Core.Application.Services.Common;
 using SIRU.Core.Domain.Common.Results;
@@ -13,7 +12,7 @@ namespace SIRU.Core.Application.Services.Positions
         private readonly IPositionRepository _positionRepository;
         private readonly IDepartmentRepository _departmentRepository;
 
-        public PositionService(IPositionRepository positionRepository, IDepartmentRepository departmentRepository, IMapper mapper) : base(positionRepository, mapper)
+        public PositionService(IPositionRepository positionRepository, IDepartmentRepository departmentRepository) : base(positionRepository)
         {
             _positionRepository = positionRepository;
             _departmentRepository = departmentRepository;

@@ -1,5 +1,4 @@
-using AutoMapper;
-using SIRU.Core.Application.Dtos.Candidate;
+using SIRU.Core.Application.Dtos.Candidates;
 using SIRU.Core.Application.Interfaces.Candidates;
 using SIRU.Core.Application.Services.Common;
 using SIRU.Core.Domain.Entities;
@@ -11,7 +10,7 @@ namespace SIRU.Core.Application.Services.Candidates
     {
         private readonly ICandidateRepository _candidateRepository;
 
-        public CandidateService(ICandidateRepository candidateRepository, IMapper mapper) : base(candidateRepository, mapper)
+        public CandidateService(ICandidateRepository candidateRepository) : base(candidateRepository)
         {
             _candidateRepository = candidateRepository;
         }

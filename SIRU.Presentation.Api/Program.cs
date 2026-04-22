@@ -33,6 +33,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<SIRU.Presentation.Api.Middleware.GlobalExceptionMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SIRU.Core.Application.Dtos.Candidate;
+using SIRU.Core.Application.Dtos.Candidates;
 using SIRU.Core.Application.Interfaces.Candidates;
 
 namespace SIRU.Presentation.Api.Controllers

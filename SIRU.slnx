@@ -13,6 +13,6 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="SIRU.Tests.IntegrationTests/SIRU.Tests.IntegrationTests.csproj" />
-    <Project Path="SIRU.Tests.UnitTests/SIRU.Tests.UnitTests.csproj" />
+    <Project Path="SIRU.Tests.UnitTests/SIRU.Tests.csproj" />
   </Folder>
 </Solution>

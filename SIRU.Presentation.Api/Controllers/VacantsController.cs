@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using SIRU.Core.Application.Dtos.Vacant;
-using SIRU.Core.Application.Interfaces.Vacant;
+using SIRU.Core.Application.Dtos.Vacants;
+using SIRU.Core.Application.Interfaces.Vacants;
 
 namespace SIRU.Presentation.Api.Controllers
 {
@@ -24,7 +24,7 @@ namespace SIRU.Presentation.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _vacantService.GetAllAsync();
-            return Ok(result.Value);
+            return Ok(result);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SIRU.Presentation.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(string id, [FromBody] SaveVacantDto dto)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateVacantDto dto)
         {
             if (!ModelState.IsValid)
             {

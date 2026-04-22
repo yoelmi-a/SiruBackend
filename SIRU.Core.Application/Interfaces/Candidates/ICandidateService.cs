@@ -1,4 +1,4 @@
-using SIRU.Core.Application.Dtos.Candidate;
+using SIRU.Core.Application.Dtos.Candidates;
 using SIRU.Core.Application.Interfaces.Common;
 using SIRU.Core.Domain.Entities;
 

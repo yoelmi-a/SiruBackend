@@ -1,5 +1,4 @@
-using AutoMapper;
-using SIRU.Core.Application.Dtos.Department;
+using SIRU.Core.Application.Dtos.Departments;
 using SIRU.Core.Application.Interfaces.Departments;
 using SIRU.Core.Application.Services.Common;
 using SIRU.Core.Domain.Common.Results;
@@ -12,7 +11,7 @@ namespace SIRU.Core.Application.Services.Departments
     {
         private readonly IDepartmentRepository _departmentRepository;
 
-        public DepartmentService(IDepartmentRepository departmentRepository, IMapper mapper) : base(departmentRepository, mapper)
+        public DepartmentService(IDepartmentRepository departmentRepository) : base(departmentRepository)
         {
             _departmentRepository = departmentRepository;
         }

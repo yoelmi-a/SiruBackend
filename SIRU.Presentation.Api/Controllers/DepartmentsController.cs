@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SIRU.Core.Application.Dtos.Department;
+using SIRU.Core.Application.Dtos.Departments;
 using SIRU.Core.Application.Interfaces.Departments;
 
 namespace SIRU.Presentation.Api.Controllers
