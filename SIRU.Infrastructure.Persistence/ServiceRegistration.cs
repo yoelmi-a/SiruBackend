@@ -22,6 +22,7 @@ public static class ServiceRegistration
         services.AddScoped<IGenericRepository<Evaluation>, EvaluationRepository>();
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IVacancyCandidateRepository, VacancyCandidateRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
     }
 }

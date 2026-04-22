@@ -1,7 +1,10 @@
 using Moq;
 using SIRU.Core.Application.Dtos.Vacants;
+using SIRU.Core.Application.Dtos.Vacancies;
+using SIRU.Core.Application.Interfaces.Common;
 using SIRU.Core.Application.Mappings;
 using SIRU.Core.Application.Services.Vacants;
+using SIRU.Core.Domain.Entities;
 using SIRU.Core.Domain.Interfaces;
 using SIRUVacant = SIRU.Core.Domain.Entities.Vacant;
 using SIRUEnums = SIRU.Core.Domain.Common.Enums;
@@ -11,13 +14,26 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
     public class VacantServiceTests
     {
         private readonly Mock<IGenericRepository<SIRUVacant>> _repositoryMock;
+        private readonly Mock<ICandidateRepository> _candidateRepositoryMock;
+        private readonly Mock<IVacancyCandidateRepository> _vacancyCandidateRepositoryMock;
+        private readonly Mock<IFileStorageService> _fileStorageMock;
+        private readonly Mock<IRankingQueue> _rankingQueueMock;
         private readonly VacantService _service;
 
         public VacantServiceTests()
         {
             MappingConfig.RegisterMappings();
             _repositoryMock = new Mock<IGenericRepository<SIRUVacant>>();
-            _service = new VacantService(_repositoryMock.Object);
+            _candidateRepositoryMock = new Mock<ICandidateRepository>();
+            _vacancyCandidateRepositoryMock = new Mock<IVacancyCandidateRepository>();
+            _fileStorageMock = new Mock<IFileStorageService>();
+            _rankingQueueMock = new Mock<IRankingQueue>();
+            _service = new VacantService(
+                _repositoryMock.Object,
+                _candidateRepositoryMock.Object,
+                _vacancyCandidateRepositoryMock.Object,
+                _fileStorageMock.Object,
+                _rankingQueueMock.Object);
         }
 
         [Fact]
@@ -128,6 +144,8 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             Assert.Contains("Entity not found.", result.Error);
         }
 
+        #region Helpers
+
         private static SIRUVacant CreateVacant(string id, string title)
         {
             return new SIRUVacant
@@ -141,5 +159,188 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
                 PositionId = 1
             };
         }
+
+        private static Mock<IFormFile> CreateMockFormFile(string fileName, long length, string contentType = "application/pdf")
+        {
+            var fileMock = new Mock<IFormFile>();
+            fileMock.Setup(f => f.FileName).Returns(fileName);
+            fileMock.Setup(f => f.Length).Returns(length);
+            fileMock.Setup(f => f.ContentType).Returns(contentType);
+            return fileMock;
+        }
+
+        private static VacancyApplicationDto CreateValidDto(string email)
+        {
+            var fileMock = CreateMockFormFile("cv.pdf", 1024);
+            return new VacancyApplicationDto
+            {
+                CandidateNames = "Test",
+                CandidateLastNames = "User",
+                CandidateEmail = email,
+                CandidatePhoneNumber = "123456",
+                CvFile = fileMock.Object
+            };
+        }
+
+        #endregion
+
+        #region ApplyToVacancyAsync Tests
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithNonExistentVacancy_ReturnsNotFound()
+        {
+            _repositoryMock.Setup(r => r.GetByIdAsync("nonexistent")).ReturnsAsync((SIRUVacant?)null);
+
+            var dto = CreateValidDto("test@test.com");
+            var result = await _service.ApplyToVacancyAsync("nonexistent", dto);
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("Vacancy not found.", error);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithClosedVacancy_ReturnsConflict()
+        {
+            var closedVacant = CreateVacant("v1", "Dev");
+            closedVacant.Status = SIRUEnums.VacantStatus.Closed;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(closedVacant);
+
+            var dto = CreateValidDto("test@test.com");
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("Vacancy is not open for applications.", error);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithNonPdfFile_ReturnsBadRequest()
+        {
+            var openVacant = CreateVacant("v1", "Dev");
+            openVacant.Status = SIRUEnums.VacantStatus.Open;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(openVacant);
+
+            var fileMock = CreateMockFormFile("cv.doc", 1024, "application/msword");
+            _fileStorageMock.Setup(f => f.GetContentType("cv.doc")).Returns("application/msword");
+
+            var dto = new VacancyApplicationDto
+            {
+                CandidateNames = "Test",
+                CandidateLastNames = "User",
+                CandidateEmail = "test@test.com",
+                CandidatePhoneNumber = "123456",
+                CvFile = fileMock.Object
+            };
+
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("Only PDF files are accepted.", error);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithOversizedFile_ReturnsBadRequest()
+        {
+            var openVacant = CreateVacant("v1", "Dev");
+            openVacant.Status = SIRUEnums.VacantStatus.Open;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(openVacant);
+
+            var largeFileMock = CreateMockFormFile("cv.pdf", 11 * 1024 * 1024);
+            _fileStorageMock.Setup(f => f.GetContentType("cv.pdf")).Returns("application/pdf");
+
+            var dto = new VacancyApplicationDto
+            {
+                CandidateNames = "Test",
+                CandidateLastNames = "User",
+                CandidateEmail = "test@test.com",
+                CandidatePhoneNumber = "123456",
+                CvFile = largeFileMock.Object
+            };
+
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("File size must not exceed 10 MB.", error);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithExistingCandidate_DoesNotCreateCandidate()
+        {
+            var openVacant = CreateVacant("v1", "Dev");
+            openVacant.Status = SIRUEnums.VacantStatus.Open;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(openVacant);
+
+            var existingCandidate = new Candidate
+            {
+                Id = "c1",
+                Names = "John",
+                LastNames = "Doe",
+                Email = "john@test.com",
+                PhoneNumber = "123456"
+            };
+            _candidateRepositoryMock.Setup(r => r.FindByEmailAsync("john@test.com")).ReturnsAsync(existingCandidate);
+            _fileStorageMock.Setup(f => f.GetContentType(It.IsAny<string>())).Returns("application/pdf");
+            _fileStorageMock.Setup(f => f.SaveFileAsync(It.IsAny<IFormFile>(), "cvs")).ReturnsAsync("/path/cv.pdf");
+
+            var dto = CreateValidDto("john@test.com");
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.True(result.IsSuccess);
+            _candidateRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Candidate>()), Times.Never);
+            _vacancyCandidateRepositoryMock.Verify(r => r.AddAsync(It.IsAny<VacancyCandidate>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithNewCandidate_CreatesCandidateAndApplication()
+        {
+            var openVacant = CreateVacant("v1", "Dev");
+            openVacant.Status = SIRUEnums.VacantStatus.Open;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(openVacant);
+
+            _candidateRepositoryMock.Setup(r => r.FindByEmailAsync("new@test.com")).ReturnsAsync((Candidate?)null);
+            _fileStorageMock.Setup(f => f.GetContentType(It.IsAny<string>())).Returns("application/pdf");
+            _fileStorageMock.Setup(f => f.SaveFileAsync(It.IsAny<IFormFile>(), "cvs")).ReturnsAsync("/path/cv.pdf");
+
+            var dto = CreateValidDto("new@test.com");
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.True(result.IsSuccess);
+            _candidateRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Candidate>()), Times.Once);
+            _vacancyCandidateRepositoryMock.Verify(r => r.AddAsync(It.IsAny<VacancyCandidate>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ApplyToVacancyAsync_WithValidData_ReturnsCreatedWithScoreZero()
+        {
+            var openVacant = CreateVacant("v1", "Dev");
+            openVacant.Status = SIRUEnums.VacantStatus.Open;
+            _repositoryMock.Setup(r => r.GetByIdAsync("v1")).ReturnsAsync(openVacant);
+
+            var existingCandidate = new Candidate
+            {
+                Id = "c1",
+                Names = "John",
+                LastNames = "Doe",
+                Email = "john@test.com",
+                PhoneNumber = "123456"
+            };
+            _candidateRepositoryMock.Setup(r => r.FindByEmailAsync("john@test.com")).ReturnsAsync(existingCandidate);
+            _fileStorageMock.Setup(f => f.GetContentType(It.IsAny<string>())).Returns("application/pdf");
+            _fileStorageMock.Setup(f => f.SaveFileAsync(It.IsAny<IFormFile>(), "cvs")).ReturnsAsync("/path/cv.pdf");
+
+            var dto = CreateValidDto("john@test.com");
+            var result = await _service.ApplyToVacancyAsync("v1", dto);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(0.0f, result.Value!.Score);
+            Assert.Equal(SIRUEnums.CandidateStatus.Pending, result.Value.Status);
+            Assert.Equal("/path/cv.pdf", result.Value.CvUrl);
+            _rankingQueueMock.Verify(q => q.EnqueueAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        #endregion
     }
 }

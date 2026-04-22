@@ -20,6 +20,7 @@
     <ProjectReference Include="..\SIRU.Infrastructure.Identity\SIRU.Infrastructure.Identity.csproj" />
     <ProjectReference Include="..\SIRU.Infrastructure.Persistence\SIRU.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\SIRU.Infrastructure.Shared\SIRU.Infrastructure.Shared.csproj" />
+    <ProjectReference Include="..\SIRU.Infraestructure.Ranking\SIRU.Infraestructure.Ranking.csproj" />
   </ItemGroup>
 
 </Project>

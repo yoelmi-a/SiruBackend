@@ -1,12 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using SIRU.Core.Application.Interfaces.Common;
+using SIRU.Infrastructure.Shared.Storage;
 
-namespace SIRU.Infrastructure.Shared
+namespace SIRU.Infrastructure.Shared;
+
+public static class ServiceRegistration
 {
-    public static class ServiceRegistration
+    public static void AddSharedLayer(this IServiceCollection services)
     {
-        public static void AddSharedLayer(this IServiceCollection services)
-        {
-            // Aquí se registrarán servicios compartidos como Email, SMS, etc.
-        }
+        services.AddScoped<IFileStorageService, FileStorageService>();
     }
 }

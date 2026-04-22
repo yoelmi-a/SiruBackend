@@ -5,6 +5,7 @@ using SIRU.Core.Application.Dtos.Employees;
 using SIRU.Core.Application.Dtos.Evaluations;
 using SIRU.Core.Application.Dtos.Positions;
 using SIRU.Core.Application.Dtos.Vacants;
+using SIRU.Core.Application.Dtos.Vacancies;
 using DomainEntities = SIRU.Core.Domain.Entities;
 using SIRUEnums = SIRU.Core.Domain.Common.Enums;
 
@@ -74,6 +75,23 @@ public static class MappingConfig
 
         TypeAdapterConfig<EvaluationInsertDto, DomainEntities.Evaluation>.NewConfig()
             .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString());
+
+        TypeAdapterConfig<VacancyApplicationDto, DomainEntities.Candidate>.NewConfig()
+            .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString());
+
+        TypeAdapterConfig<VacancyApplicationDto, DomainEntities.VacancyCandidate>.NewConfig()
+            .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString())
+            .Map(dest => dest.Status, src => SIRUEnums.CandidateStatus.Pending)
+            .Map(dest => dest.Score, src => 0.0f);
+
+        TypeAdapterConfig<DomainEntities.VacancyCandidate, VacancyApplicationResultDto>.NewConfig()
+            .Map(dest => dest.ApplicationId, src => src.Id)
+            .Map(dest => dest.VacantId, src => src.VacantId)
+            .Map(dest => dest.CandidateId, src => src.CandidateId)
+            .Map(dest => dest.CandidateFullName, src => src.Candidate != null ? $"{src.Candidate.Names} {src.Candidate.LastNames}" : null!)
+            .Map(dest => dest.CvUrl, src => src.CvUrl)
+            .Map(dest => dest.Status, src => src.Status)
+            .Map(dest => dest.Score, src => src.Score);
 
         TypeAdapterConfig.GlobalSettings.Compile();
     }

@@ -9,7 +9,7 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
         public void Configure(EntityTypeBuilder<VacancyCandidate> builder)
         {
             builder.ToTable("VacancyCandidates");
-            builder.HasKey(vc => new { vc.VacantId, vc.CandidateId });
+            builder.HasKey(vc => vc.Id);
 
             builder.HasOne(vc => vc.Vacant)
                 .WithMany(v => v.Candidates)
@@ -20,8 +20,8 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
                 .HasForeignKey(vc => vc.CandidateId);
 
             builder.Property(vc => vc.Score).IsRequired();
-            builder.Property(vc => vc.Status).IsRequired();
-            builder.Property(vc => vc.IsSelected).IsRequired().HasDefaultValue(false);
+            builder.Property(vc => vc.Status).IsRequired().HasConversion<int>();
+            builder.Property(vc => vc.CvUrl).IsRequired();
         }
     }
 }

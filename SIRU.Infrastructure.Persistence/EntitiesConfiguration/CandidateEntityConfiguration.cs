@@ -14,7 +14,6 @@ namespace SIRU.Infrastructure.Persistence.EntitiesConfiguration
             builder.Property(c => c.LastNames).IsRequired().HasMaxLength(100);
             builder.Property(c => c.Email).IsRequired().HasMaxLength(150);
             builder.Property(c => c.PhoneNumber).HasMaxLength(20);
-            builder.Property(c => c.CvUrl).IsRequired();
         }
     }
 }

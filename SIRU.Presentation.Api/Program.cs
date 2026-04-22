@@ -1,6 +1,7 @@
 using SIRU.Infrastructure.Persistence;
 using SIRU.Infrastructure.Identity;
 using SIRU.Infrastructure.Shared;
+using SIRU.Infraestructure.Ranking;
 using SIRU.Core.Application;
 using SIRU.Presentation.Api;
 
@@ -11,6 +12,7 @@ builder.Services.AddApplicationLayer();
 builder.Services.AddPersistenceLayer(builder.Configuration);
 builder.Services.AddIdentityLayer();
 builder.Services.AddSharedLayer();
+builder.Services.AddRankingLayer();
 builder.Services.AddApiLayer();
 
 builder.Services.AddControllers();

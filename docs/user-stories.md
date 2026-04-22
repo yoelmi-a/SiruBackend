@@ -50,16 +50,16 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 5 SP
-**Status:** Done (Pending Employee CRUD - HU-06/HU-08)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `POST /api/vacancies/{vacancyId}/applications` accepts multipart form data with candidate info and a PDF file.
-- [ ] Only PDF files are accepted; other types return `400 Bad Request`.
-- [ ] Files exceeding the configured maximum size (default 10 MB) are rejected with `400 Bad Request`.
-- [ ] A `CandidateToVacancy` record is created with `Status = Pending` and `Score = 0.0`.
-- [ ] The CV file is saved to the configured storage path.
-- [ ] The endpoint returns `201 Created` before the NLP ranking process completes.
-- [ ] Uploading to a vacancy not in `Open` status returns `409 Conflict`.
+- [x] `POST /api/vacancies/{vacancyId}/applications` accepts multipart form data with candidate info and a PDF file.
+- [x] Only PDF files are accepted; other types return `400 Bad Request`.
+- [x] Files exceeding the configured maximum size (default 10 MB) are rejected with `400 Bad Request`.
+- [x] A `CandidateToVacancy` record is created with `Status = Pending` and `Score = 0.0`.
+- [x] The CV file is saved to the configured storage path.
+- [x] The endpoint returns `201 Created` before the NLP ranking process completes.
+- [x] Uploading to a vacancy not in `Open` status returns `409 Conflict`.
 
 **Linked Requirements:** FR-CAN-001 to FR-CAN-004, FR-NLP-001, FR-NLP-002, FR-NLP-005, BR-REC-03, BR-REC-07
 
