@@ -72,6 +72,9 @@ public static class MappingConfig
         TypeAdapterConfig<CriterionInsertDto, DomainEntities.Criterion>.NewConfig();
         TypeAdapterConfig<CriterionUpdateDto, DomainEntities.Criterion>.NewConfig();
 
+        TypeAdapterConfig<EvaluationInsertDto, DomainEntities.Evaluation>.NewConfig()
+            .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString());
+
         TypeAdapterConfig.GlobalSettings.Compile();
     }
 

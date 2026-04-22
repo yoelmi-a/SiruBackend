@@ -5,9 +5,6 @@ using SIRU.Infrastructure.Persistence.Contexts;
 
 namespace SIRU.Infrastructure.Persistence.Repositories;
 
-/// <summary>
-/// Specific repository for Employee with work history queries.
-/// </summary>
 public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
 {
     public EmployeeRepository(ApplicationDbContext context) : base(context)
@@ -23,5 +20,17 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
                 .ThenInclude(p => p.Department!)
             .OrderByDescending(ep => ep.StartDate)
             .ToListAsync();
+    }
+
+    public async Task<EmployeePosition?> GetCurrentPositionAsync(string employeeId)
+    {
+        return await _dbSet
+            .Where(e => e.Id == employeeId)
+            .SelectMany(e => e.PositionsOccupied!)
+            .Where(ep => ep.EndDate == null)
+            .Include(ep => ep.Position!)
+                .ThenInclude(p => p.Department!)
+            .OrderByDescending(ep => ep.StartDate)
+            .FirstOrDefaultAsync();
     }
 }

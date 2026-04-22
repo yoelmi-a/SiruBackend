@@ -172,6 +172,71 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 ---
 
+### HU-08 — List All Employees
+
+**As** an HR administrator,  
+**I want** to view all registered employees,  
+**So that** I have general personnel control.
+
+**Priority:** High  
+**Estimate:** 2 SP
+**Status:** Done
+
+**Acceptance Criteria:**
+- [x] `GET /api/employees` returns a paginated list with `page` and `pageSize` parameters.
+- [x] Supports optional `isActive` filter (`true` / `false` / omit for all).
+- [x] Each item includes: ID, full name, `Cedula`, phone, active status.
+- [x] Returns `200 OK` with a pagination envelope (`totalCount`, `page`, `pageSize`, `items`).
+
+**Linked Requirements:** FR-EMP-004, BR-EMP-05
+
+---
+
+### HU-09 — View Internal Work History
+
+**As** an HR administrator,  
+**I want** to consult the positions held by an employee,  
+**So that** I can understand their career path within the company.
+
+**Priority:** Medium  
+**Estimate:** 3 SP
+**Status:** Done
+
+**Acceptance Criteria:**
+- [x] `GET /api/employees/{id}/history` returns all `EmployeePosition` records for the employee.
+- [x] Each entry includes: position name, department name, assigned date.
+- [x] Results are sorted by assignment date descending.
+- [x] Returns `404 Not Found` if the employee does not exist.
+
+**Linked Requirements:** FR-POS-004, BR-POS-05
+
+---
+
+## 5. Module 3 — Performance Evaluation
+
+---
+
+### HU-10 — Create Evaluation Criteria
+
+**As** an HR administrator,  
+**I want** to define evaluation criteria (responsibility, teamwork, etc.),  
+**So that** evaluations are structured and consistent.
+
+**Priority:** High  
+**Estimate:** 2 SP
+**Status:** Done
+
+**Acceptance Criteria:**
+- [x] `POST /api/evaluation-criteria` accepts a `name` field.
+- [x] Criterion name must be unique; duplicate returns `409 Conflict`.
+- [x] Returns `201 Created` with the criterion DTO.
+- [x] `GET /api/evaluation-criteria` returns the full list of active criteria.
+- [x] `DELETE /api/evaluation-criteria/{id}` is blocked if the criterion is used in any evaluation; returns `409 Conflict`.
+
+**Linked Requirements:** FR-EVAL-006, FR-EVAL-009, BR-EVAL-06, BR-INT-04
+
+---
+
 ### HU-11 — Register Evaluation
 
 **As** a supervisor,
@@ -180,15 +245,15 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 5 SP
-**Status:** To Do
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `POST /api/evaluations` accepts `employeeId`, `evaluationDate`, and a list of `{ criterionId, score, observation? }` entries.
-- [ ] At least one criterion entry is required; empty list returns `400 Bad Request`.
-- [ ] Each `score` must be in [0.0, 5.0]; out-of-range values return `400 Bad Request`.
-- [ ] The system automatically computes and stores the average score across all criteria.
-- [ ] Returns `201 Created` with the full evaluation DTO including the computed average.
-- [ ] Returns `404 Not Found` if `employeeId` does not exist.
+- [x] `POST /api/evaluations` accepts `employeeId`, `evaluationDate`, and a list of `{ criterionId, score, observation? }` entries.
+- [x] At least one criterion entry is required; empty list returns `400 Bad Request`.
+- [x] Each `score` must be in [0.0, 5.0]; out-of-range values return `400 Bad Request`.
+- [x] The system automatically computes and stores the average score across all criteria.
+- [x] Returns `201 Created` with the full evaluation DTO including the computed average.
+- [x] Returns `404 Not Found` if `employeeId` does not exist.
 
 **Linked Requirements:** FR-EVAL-001 to FR-EVAL-005, BR-EVAL-01 to BR-EVAL-05
 

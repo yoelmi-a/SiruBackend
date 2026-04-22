@@ -27,6 +27,7 @@ namespace SIRU.Core.Application
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<ICriterionService, CriterionService>();
+            services.AddScoped<IEvaluationService, EvaluationService>();
         }
     }
 }
