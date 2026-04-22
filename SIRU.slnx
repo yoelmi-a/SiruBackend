@@ -4,6 +4,7 @@
     <Project Path="SIRU.Core.Domain/SIRU.Core.Domain.csproj" />
   </Folder>
   <Folder Name="/Infrastructure/">
+    <Project Path="SIRU.Infraestructure.Ranking/SIRU.Infraestructure.Ranking.csproj" Id="f1f62c17-2811-40d2-9c19-f73b36f8c51b" />
     <Project Path="SIRU.Infrastructure.Identity/SIRU.Infrastructure.Identity.csproj" />
     <Project Path="SIRU.Infrastructure.Persistence/SIRU.Infrastructure.Persistence.csproj" />
     <Project Path="SIRU.Infrastructure.Shared/SIRU.Infrastructure.Shared.csproj" />
