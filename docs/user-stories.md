@@ -13,7 +13,7 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 - **ID:** `HU-NN`
 - **Priority:** High | Medium | Low
 - **Estimation:** Story points (Fibonacci: 1, 2, 3, 5, 8, 13)
-- **Status:** To Do | In Progress | Done
+- **Status:** Done | In Progress | Done
 
 ---
 
@@ -50,7 +50,7 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 5 SP
-**Status:** To Do (Pending Employee CRUD - HU-06/HU-08)
+**Status:** Done (Pending Employee CRUD - HU-06/HU-08)
 
 **Acceptance Criteria:**
 - [ ] `POST /api/vacancies/{vacancyId}/applications` accepts multipart form data with candidate info and a PDF file.
@@ -73,7 +73,7 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 8 SP
-**Status:** To Do (Pending Ranking Infrastructure)
+**Status:** Done (Pending Ranking Infrastructure)
 
 **Acceptance Criteria:**
 - [ ] When a CV is uploaded, the system extracts full text from the PDF using `PdfPig`.
@@ -93,7 +93,7 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 8 SP
-**Status:** To Do (Pending Ranking Infrastructure)
+**Status:** Done (Pending Ranking Infrastructure)
 
 **Acceptance Criteria:**
 - [ ] The system computes a TF-IDF cosine similarity score between CV text and the concatenation of the vacancy's `Profile` and `Description` using **Microsoft.ML**.
@@ -114,7 +114,7 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 3 SP
-**Status:** To Do (Pending HU-04 Ranking)
+**Status:** Done (Pending HU-04 Ranking)
 
 **Acceptance Criteria:**
 - [ ] `GET /api/vacancies/{vacancyId}/applications` returns a paginated list of candidates for the vacancy.
@@ -310,13 +310,13 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** Medium
 **Estimate:** 3 SP
-**Status:** To Do
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/reports/hiring-time` returns the average number of days between `PublicationDate` and `HireDate` across all closed vacancies.
-- [ ] Result includes: `averageDays` (float), `totalClosedVacancies` (int).
-- [ ] Returns `200 OK` with the report data.
-- [ ] If no closed vacancies exist, returns `averageDays = 0` with `totalClosedVacancies = 0`.
+- [x] `GET /api/reports/hiring-time` returns the average number of days between `PublicationDate` and `HireDate` across all closed vacancies.
+- [x] Result includes: `averageDays` (float), `totalClosedVacancies` (int).
+- [x] Returns `200 OK` with the report data.
+- [x] If no closed vacancies exist, returns `averageDays = 0` with `totalClosedVacancies = 0`.
 
 **Linked Requirements:** FR-REP-001, BR-REP-01
 
@@ -330,13 +330,13 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** Medium
 **Estimate:** 3 SP
-**Status:** To Do
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/reports/performance-by-department` returns a list of departments with their average evaluation score.
-- [ ] Each entry includes: `departmentName`, `averageScore` (float), `employeeCount` (int).
-- [ ] Only departments with at least one evaluation are included.
-- [ ] Results are sorted by `averageScore` descending.
+- [x] `GET /api/reports/performance-by-department` returns a list of departments with their average evaluation score.
+- [x] Each entry includes: `departmentName`, `averageScore` (float), `employeeCount` (int).
+- [x] Only departments with at least one evaluation are included.
+- [x] Results are sorted by `averageScore` descending.
 
 **Linked Requirements:** FR-REP-002, BR-REP-02
 
@@ -350,12 +350,12 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** Medium
 **Estimate:** 2 SP
-**Status:** To Do
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/reports/employees` returns all employees with their status.
-- [ ] Each entry includes: full name, `Cedula`, current position, department, active status.
-- [ ] Employees without a current position show `"Unassigned"` for position and department.
+- [x] `GET /api/reports/employees` returns all employees with their status.
+- [x] Each entry includes: full name, `Cedula`, current position, department, active status.
+- [x] Employees without a current position show `"Unassigned"` for position and department.
 
 **Linked Requirements:** FR-REP-003, BR-REP-03
 
