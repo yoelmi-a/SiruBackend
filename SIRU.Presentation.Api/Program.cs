@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddApplicationLayer();
 builder.Services.AddPersistenceLayer(builder.Configuration);
-builder.Services.AddIdentityLayer();
+builder.Services.AddIdentityLayer(builder.Configuration);
 builder.Services.AddSharedLayer();
 builder.Services.AddRankingLayer();
 builder.Services.AddApiLayer();
