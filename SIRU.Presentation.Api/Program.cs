@@ -4,6 +4,7 @@ using SIRU.Infrastructure.Shared;
 using SIRU.Infraestructure.Ranking;
 using SIRU.Core.Application;
 using SIRU.Presentation.Api;
+using SIRU.Presentation.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +36,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<SIRU.Presentation.Api.Middleware.GlobalExceptionMiddleware>();
-
+app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
