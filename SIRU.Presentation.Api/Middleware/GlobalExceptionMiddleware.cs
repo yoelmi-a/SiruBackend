@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 
@@ -26,23 +27,34 @@ public class GlobalExceptionMiddleware
         catch (Exception ex)
         {
             _logger.LogError(ex, "An unhandled exception occurred");
-            await HandleExceptionAsync(context);
+            await HandleExceptionAsync(context, ex.Message);
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context)
+    private static async Task HandleExceptionAsync(HttpContext context, string exceptionMessage)
     {
+        string exceptionTitle = "An unexpected error occurred";
+        string details = exceptionMessage;
+
+        switch (exceptionMessage)
+        {
+            default:
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                break;
+        }
+
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        var response = new
+        var problemDetails = new ProblemDetails
         {
-            statusCode = 500,
-            message = "An unexpected error occurred.",
-            errors = Array.Empty<string>()
+            Title = exceptionTitle,
+            Detail = details,
+            Status = context.Response.StatusCode,
+            Instance = context.Request.Path
         };
 
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        await context.Response.WriteAsJsonAsync(response, options);
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(problemDetails);
     }
 }
