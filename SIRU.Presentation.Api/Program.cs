@@ -5,7 +5,6 @@ using SIRU.Infraestructure.Ranking;
 using SIRU.Infrastructure.Identity;
 using SIRU.Infrastructure.Persistence;
 using SIRU.Infrastructure.Shared;
-using SIRU.Presentation.Api;
 using SIRU.Presentation.Api.Extensions;
 using SIRU.Presentation.Api.Middleware;
 using System.Text.Json.Serialization;

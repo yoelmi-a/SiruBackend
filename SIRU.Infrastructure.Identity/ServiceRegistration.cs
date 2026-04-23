@@ -7,9 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using SIRU.Core.Application.Interfaces.Accounts;
+using SIRU.Core.Application.Interfaces.Auth;
 using SIRU.Core.Domain.Settings;
 using SIRU.Infrastructure.Identity.Contexts;
 using SIRU.Infrastructure.Identity.Entities;
+using SIRU.Infrastructure.Identity.Services;
 using System.Text;
 
 namespace SIRU.Infrastructure.Identity
@@ -116,9 +119,9 @@ namespace SIRU.Infrastructure.Identity
             #endregion
 
             #region Services
-            //services.AddScoped<IAuthService, AuthService>();
-            //services.AddScoped<IAccountService, AccountService>();
-            //services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IRoleService, RoleService>();
             #endregion
 
         }
