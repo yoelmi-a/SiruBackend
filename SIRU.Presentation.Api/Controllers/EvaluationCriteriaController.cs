@@ -41,7 +41,7 @@ public class EvaluationCriteriaController : ControllerBase
         var result = await _criterionService.GetByIdAsync(id);
         if (!result.IsSuccess)
         {
-            return NotFound(new { Errors = result.Error });
+            return NotFound(new { Errors = result.Errors });
         }
         return Ok(result.Value);
     }
@@ -63,11 +63,11 @@ public class EvaluationCriteriaController : ControllerBase
         var result = await _criterionService.AddAsync(dto);
         if (!result.IsSuccess)
         {
-            if (result.Error.Any(e => e.Contains("ya está registrado")))
+            if (result.Errors.Any(e => e.Contains("ya está registrado")))
             {
-                return Conflict(new { Errors = result.Error });
+                return Conflict(new { Errors = result.Errors });
             }
-            return BadRequest(new { Errors = result.Error });
+            return BadRequest(new { Errors = result.Errors });
         }
         return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
     }
@@ -90,15 +90,15 @@ public class EvaluationCriteriaController : ControllerBase
         var result = await _criterionService.UpdateAsync(id, dto);
         if (!result.IsSuccess)
         {
-            if (result.Error.Any(e => e.Contains("not found")))
+            if (result.Errors.Any(e => e.Contains("not found")))
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
-            if (result.Error.Any(e => e.Contains("ya está registrado")))
+            if (result.Errors.Any(e => e.Contains("ya está registrado")))
             {
-                return Conflict(new { Errors = result.Error });
+                return Conflict(new { Errors = result.Errors });
             }
-            return BadRequest(new { Errors = result.Error });
+            return BadRequest(new { Errors = result.Errors });
         }
         return Ok(result.Value);
     }
@@ -115,15 +115,15 @@ public class EvaluationCriteriaController : ControllerBase
         var result = await _criterionService.DeleteAsync(id);
         if (!result.IsSuccess)
         {
-            if (result.Error.Any(e => e.Contains("not found")))
+            if (result.Errors.Any(e => e.Contains("not found")))
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
-            if (result.Error.Any(e => e.Contains("eliminar")))
+            if (result.Errors.Any(e => e.Contains("eliminar")))
             {
-                return Conflict(new { Errors = result.Error });
+                return Conflict(new { Errors = result.Errors });
             }
-            return BadRequest(new { Errors = result.Error });
+            return BadRequest(new { Errors = result.Errors });
         }
         return NoContent();
     }

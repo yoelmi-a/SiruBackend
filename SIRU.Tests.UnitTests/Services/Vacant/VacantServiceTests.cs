@@ -71,7 +71,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.GetByIdAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.UpdateAsync(id, updateDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.DeleteAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         #region Helpers
@@ -195,7 +195,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.ApplyToVacancyAsync("nonexistent", dto);
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("Vacancy not found.", error);
         }
 
@@ -210,7 +210,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.ApplyToVacancyAsync("v1", dto);
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("Vacancy is not open for applications.", error);
         }
 
@@ -236,7 +236,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.ApplyToVacancyAsync("v1", dto);
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("Only PDF files are accepted.", error);
         }
 
@@ -262,7 +262,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.ApplyToVacancyAsync("v1", dto);
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("File size must not exceed 10 MB.", error);
         }
 
@@ -374,7 +374,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.RecalculateScoresAsync("nonexistent");
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("Vacancy not found.", error);
         }
 
@@ -420,7 +420,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             var result = await _service.GetApplicationsByVacancyAsync("nonexistent", pagination);
 
             Assert.False(result.IsSuccess);
-            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            var error = result.Errors.FirstOrDefault() ?? string.Empty;
             Assert.Equal("Vacancy not found.", error);
         }
 

@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using SIRU.Core.Domain.Settings;
 using SIRU.Infrastructure.Identity.Contexts;
+using SIRU.Infrastructure.Identity.Entities;
 using System.Text;
 
 namespace SIRU.Infrastructure.Identity
@@ -42,11 +43,11 @@ namespace SIRU.Infrastructure.Identity
                 opt.SignIn.RequireConfirmedEmail = true;
             });
 
-            services.AddIdentityCore<IdentityUser>()
+            services.AddIdentityCore<AuthAccount>()
                 .AddRoles<IdentityRole>()
                 .AddSignInManager()
                 .AddEntityFrameworkStores<AuthDbContext>()
-                .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>(TokenOptions.DefaultProvider);
+                .AddTokenProvider<DataProtectorTokenProvider<AuthAccount>>(TokenOptions.DefaultProvider);
 
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
             {

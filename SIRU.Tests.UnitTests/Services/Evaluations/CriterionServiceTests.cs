@@ -62,7 +62,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.GetByIdAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         #endregion
@@ -95,7 +95,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.AddAsync(insertDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("El nombre del criterio ya está registrado.", result.Error);
+            Assert.Contains("El nombre del criterio ya está registrado.", result.Errors);
         }
 
         #endregion
@@ -130,7 +130,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.UpdateAsync(id, updateDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.UpdateAsync(id, updateDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("El nombre del criterio ya está registrado.", result.Error);
+            Assert.Contains("El nombre del criterio ya está registrado.", result.Errors);
         }
 
         #endregion
@@ -180,7 +180,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.DeleteAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         [Fact]
@@ -197,7 +197,7 @@ namespace SIRU.Tests.UnitTests.Services.Evaluations
             var result = await _service.DeleteAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("No se puede eliminar el criterio porque está siendo utilizado en al menos una evaluación.", result.Error);
+            Assert.Contains("No se puede eliminar el criterio porque está siendo utilizado en al menos una evaluación.", result.Errors);
         }
 
         #endregion

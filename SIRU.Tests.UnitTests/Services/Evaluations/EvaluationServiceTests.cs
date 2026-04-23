@@ -69,7 +69,7 @@ public class EvaluationServiceTests
         var result = await _service.AddAsync(dto);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Debe incluir al menos un criterio.", result.Error);
+        Assert.Contains("Debe incluir al menos un criterio.", result.Errors);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class EvaluationServiceTests
         var result = await _service.AddAsync(dto);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Empleado no encontrado o no tiene posición activa.", result.Error);
+        Assert.Contains("Empleado no encontrado o no tiene posición activa.", result.Errors);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class EvaluationServiceTests
         var result = await _service.AddAsync(dto);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Empleado no encontrado o no tiene posición activa.", result.Error);
+        Assert.Contains("Empleado no encontrado o no tiene posición activa.", result.Errors);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class EvaluationServiceTests
         var result = await _service.AddAsync(dto);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Criterio(s) no encontrado(s): 99", result.Error);
+        Assert.Contains("Criterio(s) no encontrado(s): 99", result.Errors);
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class EvaluationServiceTests
         var result = await _service.GetByEmployeeIdAsync(employeeId);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("Empleado no encontrado.", result.Error);
+        Assert.Contains("Empleado no encontrado.", result.Errors);
     }
 
     [Fact]

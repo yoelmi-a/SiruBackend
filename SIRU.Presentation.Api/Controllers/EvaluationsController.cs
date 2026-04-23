@@ -30,12 +30,12 @@ public class EvaluationsController : ControllerBase
         var result = await _evaluationService.AddAsync(dto);
         if (!result.IsSuccess)
         {
-            var errorMessage = result.Error.FirstOrDefault() ?? "";
+            var errorMessage = result.Errors.FirstOrDefault() ?? "";
             if (errorMessage.Contains("no encontrado") || errorMessage.Contains("posición activa"))
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
-            return BadRequest(new { Errors = result.Error });
+            return BadRequest(new { Errors = result.Errors });
         }
 
         return CreatedAtAction(nameof(Create), new { id = result.Value!.Id }, result.Value);

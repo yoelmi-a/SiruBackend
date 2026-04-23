@@ -15,7 +15,7 @@ namespace SIRU.Infrastructure.Identity.Contexts
             base.OnModelCreating(builder);
 
             builder.HasDefaultSchema("Identity");
-            builder.Entity<IdentityUser>().ToTable("Users");
+            builder.Entity<AuthAccount>().ToTable("Accounts");
             builder.Entity<IdentityRole>().ToTable("Roles");
             builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
             builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");

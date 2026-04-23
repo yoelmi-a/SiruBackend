@@ -38,7 +38,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _employeeService.GetByIdAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return Ok(result.Value);
         }
@@ -57,7 +57,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _employeeService.AddAsync(dto);
             if (!result.IsSuccess)
             {
-                return Conflict(new { Errors = result.Error });
+                return Conflict(new { Errors = result.Errors });
             }
             return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
         }
@@ -77,11 +77,11 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _employeeService.UpdateAsync(id, dto);
             if (!result.IsSuccess)
             {
-                if (result.Error.Contains("no encontrado"))
+                if (result.Errors.Contains("no encontrado"))
                 {
-                    return NotFound(new { Errors = result.Error });
+                    return NotFound(new { Errors = result.Errors });
                 }
-                return Conflict(new { Errors = result.Error });
+                return Conflict(new { Errors = result.Errors });
             }
             return Ok(result.Value);
         }
@@ -94,7 +94,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _employeeService.DeleteAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return NoContent();
         }
@@ -107,7 +107,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _employeeService.GetHistoryAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return Ok(result.Value);
         }
@@ -120,7 +120,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _evaluationService.GetByEmployeeIdAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return Ok(result.Value);
         }

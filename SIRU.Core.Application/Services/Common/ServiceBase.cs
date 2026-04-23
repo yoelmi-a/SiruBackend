@@ -36,7 +36,7 @@ namespace SIRU.Core.Application.Services.Common
             var resPreProcessing = await InsertPreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
-                return Result.Failure<TDto>(resPreProcessing.Error.ToList());
+                return Result.Failure<TDto>(resPreProcessing.Errors.ToList());
             }
             await _repository.AddAsync(entity);
             var resultDto = entity.Adapt<TDto>();
@@ -84,7 +84,7 @@ namespace SIRU.Core.Application.Services.Common
             var resPreProcessing = await UpdatePreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
-                return Result.Failure<TDto>(resPreProcessing.Error.ToList());
+                return Result.Failure<TDto>(resPreProcessing.Errors.ToList());
             }
             await _repository.UpdateAsync(entity);
             var resultDto = entity.Adapt<TDto>();

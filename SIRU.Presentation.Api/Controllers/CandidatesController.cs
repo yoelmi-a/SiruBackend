@@ -32,7 +32,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _candidateService.GetByIdAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return Ok(result.Value);
         }
@@ -50,7 +50,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _candidateService.AddAsync(dto);
             if (!result.IsSuccess)
             {
-                return BadRequest(new { Errors = result.Error });
+                return BadRequest(new { Errors = result.Errors });
             }
 
             return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
@@ -70,10 +70,10 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _candidateService.UpdateAsync(id, dto);
             if (!result.IsSuccess)
             {
-                 if (result.Error != null && result.Error.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
-                    return NotFound(new { Errors = result.Error });
+                 if (result.Errors != null && result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
+                    return NotFound(new { Errors = result.Errors });
 
-                return BadRequest(new { Errors = result.Error });
+                return BadRequest(new { Errors = result.Errors });
             }
             return NoContent();
         }
@@ -86,7 +86,7 @@ namespace SIRU.Presentation.Api.Controllers
             var result = await _candidateService.DeleteAsync(id);
             if (!result.IsSuccess)
             {
-                return NotFound(new { Errors = result.Error });
+                return NotFound(new { Errors = result.Errors });
             }
             return NoContent();
         }

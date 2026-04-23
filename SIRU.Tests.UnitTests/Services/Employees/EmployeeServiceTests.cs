@@ -96,7 +96,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.GetByIdAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         #endregion
@@ -147,7 +147,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.AddAsync(insertDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("La cédula ya está registrada", result.Error);
+            Assert.Contains("La cédula ya está registrada", result.Errors);
         }
 
         #endregion
@@ -198,7 +198,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.UpdateAsync(id, updateDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         [Fact]
@@ -225,7 +225,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.UpdateAsync(id, updateDto);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("La cédula ya está registrada", result.Error);
+            Assert.Contains("La cédula ya está registrada", result.Errors);
         }
 
         #endregion
@@ -257,7 +257,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.DeleteAsync(id);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         #endregion
@@ -357,7 +357,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             var result = await _service.GetHistoryAsync(employeeId);
 
             Assert.False(result.IsSuccess);
-            Assert.Contains("Entity not found.", result.Error);
+            Assert.Contains("Entity not found.", result.Errors);
         }
 
         #endregion
