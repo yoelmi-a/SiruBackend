@@ -342,5 +342,88 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
         }
 
         #endregion
+
+        #region RecalculateScoresAsync Tests
+
+        [Fact]
+        public async Task RecalculateScoresAsync_WithExistingVacancy_EnqueuesAllCandidatesAndReturnsSuccess()
+        {
+            var vacantId = "v1";
+            var vacant = CreateVacant(vacantId, "Dev");
+            _repositoryMock.Setup(r => r.GetByIdAsync(vacantId)).ReturnsAsync(vacant);
+
+            var candidates = new List<VacancyCandidate>
+            {
+                new() { Id = "app1", VacantId = vacantId, CandidateId = "c1", Score = 0.5f, Status = SIRUEnums.CandidateStatus.Pending, CvUrl = "/cv1.pdf" },
+                new() { Id = "app2", VacantId = vacantId, CandidateId = "c2", Score = 0.8f, Status = SIRUEnums.CandidateStatus.Pending, CvUrl = "/cv2.pdf" }
+            };
+            _vacancyCandidateRepositoryMock.Setup(r => r.GetAllByVacancyIdAsync(vacantId)).ReturnsAsync(candidates);
+
+            var result = await _service.RecalculateScoresAsync(vacantId);
+
+            Assert.True(result.IsSuccess);
+            _rankingQueueMock.Verify(q => q.EnqueueAsync("app1"), Times.Once);
+            _rankingQueueMock.Verify(q => q.EnqueueAsync("app2"), Times.Once);
+        }
+
+        [Fact]
+        public async Task RecalculateScoresAsync_WithNonExistentVacancy_ReturnsNotFound()
+        {
+            _repositoryMock.Setup(r => r.GetByIdAsync("nonexistent")).ReturnsAsync((SIRUVacant?)null);
+
+            var result = await _service.RecalculateScoresAsync("nonexistent");
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("Vacancy not found.", error);
+        }
+
+        #endregion
+
+        #region GetApplicationsByVacancyAsync Tests
+
+        [Fact]
+        public async Task GetApplicationsByVacancyAsync_WithExistingVacancy_ReturnsPaginatedList()
+        {
+            var vacantId = "v1";
+            var vacant = CreateVacant(vacantId, "Dev");
+            _repositoryMock.Setup(r => r.GetByIdAsync(vacantId)).ReturnsAsync(vacant);
+
+            var candidates = new List<VacancyCandidate>
+            {
+                new() { Id = "app1", VacantId = vacantId, CandidateId = "c1", Score = 0.8f, Status = SIRUEnums.CandidateStatus.Pending, CvUrl = "/cv1.pdf", Candidate = new Candidate { Id = "c1", Names = "John", LastNames = "Doe", Email = "john@test.com", PhoneNumber = "123" } },
+                new() { Id = "app2", VacantId = vacantId, CandidateId = "c2", Score = 0.5f, Status = SIRUEnums.CandidateStatus.Pending, CvUrl = "/cv2.pdf", Candidate = new Candidate { Id = "c2", Names = "Jane", LastNames = "Smith", Email = "jane@test.com", PhoneNumber = "456" } }
+            };
+
+            var pagination = new SIRU.Core.Domain.Common.Pagination.Pagination(1, 10);
+            var paginatedResponse = new SIRU.Core.Domain.Common.Pagination.PaginatedResponse<VacancyCandidate>
+            {
+                Items = candidates,
+                Pagination = new SIRU.Core.Domain.Common.Pagination.Pagination { PageNumber = 1, PageSize = 10, TotalCount = 2 }
+            };
+            _vacancyCandidateRepositoryMock.Setup(r => r.GetPaginatedByVacancyIdAsync(vacantId, It.IsAny<SIRU.Core.Domain.Common.Pagination.Pagination>())).ReturnsAsync(paginatedResponse);
+
+            var result = await _service.GetApplicationsByVacancyAsync(vacantId, pagination);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(2, result.Value!.Items.Count());
+            Assert.Equal("John Doe", result.Value.Items.First().CandidateFullName);
+            Assert.Equal(0.8f, result.Value.Items.First().Score);
+        }
+
+        [Fact]
+        public async Task GetApplicationsByVacancyAsync_WithNonExistentVacancy_ReturnsNotFound()
+        {
+            _repositoryMock.Setup(r => r.GetByIdAsync("nonexistent")).ReturnsAsync((SIRUVacant?)null);
+
+            var pagination = new SIRU.Core.Domain.Common.Pagination.Pagination(1, 10);
+            var result = await _service.GetApplicationsByVacancyAsync("nonexistent", pagination);
+
+            Assert.False(result.IsSuccess);
+            var error = result.Error.FirstOrDefault() ?? string.Empty;
+            Assert.Equal("Vacancy not found.", error);
+        }
+
+        #endregion
     }
 }

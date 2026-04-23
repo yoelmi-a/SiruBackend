@@ -5,6 +5,7 @@ using SIRU.Core.Application.Interfaces.Common;
 using SIRU.Core.Application.Interfaces.Vacants;
 using SIRU.Core.Application.Services.Common;
 using SIRU.Core.Domain.Common.Enums;
+using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Core.Domain.Common.Results;
 using SIRU.Core.Domain.Entities;
 using SIRU.Core.Domain.Interfaces;
@@ -95,6 +96,43 @@ public class VacantService : ServiceBase<Vacant, string, VacantDto, SaveVacantDt
         };
 
         return Result<VacancyApplicationResultDto>.Success(resultDto);
+    }
+
+    public async Task<Result> RecalculateScoresAsync(string vacantId)
+    {
+        var vacant = await _repository.GetByIdAsync(vacantId);
+        if (vacant is null)
+        {
+            return Result.Failure(new List<string> { "Vacancy not found." });
+        }
+
+        var candidates = await _vacancyCandidateRepository.GetAllByVacancyIdAsync(vacantId);
+        foreach (var candidate in candidates)
+        {
+            _ = _rankingQueue.EnqueueAsync(candidate.Id);
+        }
+
+        return Result.Success();
+    }
+
+    public async Task<Result<PaginatedResponse<VacancyApplicationResultDto>>> GetApplicationsByVacancyAsync(string vacantId, Pagination pagination)
+    {
+        var vacant = await _repository.GetByIdAsync(vacantId);
+        if (vacant is null)
+        {
+            return Result.Failure<PaginatedResponse<VacancyApplicationResultDto>>(new List<string> { "Vacancy not found." });
+        }
+
+        var paginatedResult = await _vacancyCandidateRepository.GetPaginatedByVacancyIdAsync(vacantId, pagination);
+        var mappedItems = paginatedResult.Items.Adapt<List<VacancyApplicationResultDto>>();
+
+        var response = new PaginatedResponse<VacancyApplicationResultDto>
+        {
+            Items = mappedItems,
+            Pagination = paginatedResult.Pagination
+        };
+
+        return Result<PaginatedResponse<VacancyApplicationResultDto>>.Success(response);
     }
 
     protected override async Task<Result<Vacant>> InsertPreProcessing(Vacant entity, SaveVacantDto dto)

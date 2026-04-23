@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using SIRU.Core.Application.Dtos.Vacants;
 using SIRU.Core.Application.Dtos.Vacancies;
 using SIRU.Core.Application.Interfaces.Vacants;
+using SIRU.Core.Domain.Common.Pagination;
 
 namespace SIRU.Presentation.Api.Controllers
 {
@@ -128,6 +129,41 @@ namespace SIRU.Presentation.Api.Controllers
             }
 
             return CreatedAtAction(nameof(GetById), new { id = vacancyId }, result.Value);
+        }
+
+        /// <summary>
+        /// Recalculates ranking scores for all candidates of a vacancy.
+        /// </summary>
+        [HttpPost("{vacancyId}/recalculate-scores")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RecalculateScores(string vacancyId)
+        {
+            var result = await _vacantService.RecalculateScoresAsync(vacancyId);
+            if (!result.IsSuccess)
+            {
+                return NotFound(new { Errors = result.Error });
+            }
+
+            return Accepted();
+        }
+
+        /// <summary>
+        /// Returns a paginated list of candidates for a vacancy, ordered by score descending.
+        /// </summary>
+        [HttpGet("{vacancyId}/applications")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<VacancyApplicationResultDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetApplications(string vacancyId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            var pagination = new Pagination(page, pageSize);
+            var result = await _vacantService.GetApplicationsByVacancyAsync(vacancyId, pagination);
+            if (!result.IsSuccess)
+            {
+                return NotFound(new { Errors = result.Error });
+            }
+
+            return Ok(result.Value);
         }
     }
 }

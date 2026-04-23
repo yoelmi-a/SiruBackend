@@ -73,13 +73,13 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 8 SP
-**Status:** Done (Pending Ranking Infrastructure)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] When a CV is uploaded, the system extracts full text from the PDF using `PdfPig`.
-- [ ] The extracted text is stored and used for the ranking computation.
-- [ ] If text extraction fails (e.g., scanned image PDF with no text layer), the system logs the error and sets `Score = 0.0`; it does not block the upload response.
-- [ ] The text extraction runs asynchronously after the upload response is returned.
+- [x] When a CV is uploaded, the system extracts full text from the PDF using `PdfPig`.
+- [x] The extracted text is stored and used for the ranking computation.
+- [x] If text extraction fails (e.g., scanned image PDF with no text layer), the system logs the error and sets `Score = 0.0`; it does not block the upload response.
+- [x] The text extraction runs asynchronously after the upload response is returned.
 
 **Linked Requirements:** FR-NLP-001, FR-NLP-002, BR-REC-15
 
@@ -93,14 +93,14 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 8 SP
-**Status:** Done (Pending Ranking Infrastructure)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] The system computes a TF-IDF cosine similarity score between CV text and the concatenation of the vacancy's `Profile` and `Description` using **Microsoft.ML**.
-- [ ] The score is a `float` in the range [0.0, 1.0] stored in `CandidateToVacancy.Score`.
-- [ ] The computation runs asynchronously via `RankingBackgroundService`.
-- [ ] `POST /api/vacancies/{vacancyId}/recalculate-scores` triggers recalculation for all candidates; returns `202 Accepted`.
-- [ ] The service returns `Result<float>.Success(score)` on success and `Result<float>.Failure(...)` on error.
+- [x] The system computes a TF-IDF cosine similarity score between CV text and the concatenation of the vacancy's `Profile` and `Description` using **Microsoft.ML**.
+- [x] The score is a `float` in the range [0.0, 1.0] stored in `CandidateToVacancy.Score`.
+- [x] The computation runs asynchronously via `RankingBackgroundService`.
+- [x] `POST /api/vacancies/{vacancyId}/recalculate-scores` triggers recalculation for all candidates; returns `202 Accepted`.
+- [x] The service returns `Result<float>.Success(score)` on success and `Result<float>.Failure(...)` on error.
 
 **Linked Requirements:** FR-NLP-003 to FR-NLP-006, BR-REC-16 to BR-REC-20
 
@@ -114,13 +114,13 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** High
 **Estimate:** 3 SP
-**Status:** Done (Pending HU-04 Ranking)
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/vacancies/{vacancyId}/applications` returns a paginated list of candidates for the vacancy.
-- [ ] The list is sorted by `Score` descending by default.
-- [ ] Each entry includes: candidate name, email, score, status, and application ID.
-- [ ] If the vacancy does not exist, the endpoint returns `404 Not Found`.
+- [x] `GET /api/vacancies/{vacancyId}/applications` returns a paginated list of candidates for the vacancy.
+- [x] The list is sorted by `Score` descending by default.
+- [x] Each entry includes: candidate name, email, score, status, and application ID.
+- [x] If the vacancy does not exist, the endpoint returns `404 Not Found`.
 
 **Linked Requirements:** FR-CAN-008, BR-REC-18
 
