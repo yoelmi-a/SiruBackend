@@ -369,14 +369,14 @@ This document contains the full user story backlog for the SIRUS platform. Stori
 
 **Priority:** Medium
 **Estimate:** 5 SP
-**Status:** To Do
+**Status:** Done
 
 **Acceptance Criteria:**
-- [ ] `GET /api/reports/hiring-time/export` returns a PDF file with `Content-Type: application/pdf`.
-- [ ] `GET /api/reports/performance-by-department/export` returns a PDF file.
-- [ ] `GET /api/reports/employees/export` returns a PDF file.
-- [ ] PDFs are generated using **QuestPDF** and include the report title, generation date, and tabular data.
-- [ ] PDF generation failure returns `500 Internal Server Error` with a descriptive message (no stack trace).
+- [x] `GET /api/reports/hiring-time/export` returns a PDF file with `Content-Type: application/pdf`.
+- [x] `GET /api/reports/performance-by-department/export` returns a PDF file.
+- [x] `GET /api/reports/employees/export` returns a PDF file.
+- [x] PDFs are generated using **QuestPDF** and include the report title, generation date, and tabular data.
+- [x] PDF generation failure returns `500 Internal Server Error` with a descriptive message (no stack trace).
 
 **Linked Requirements:** FR-REP-004, BR-REP-04
 

@@ -126,4 +126,45 @@ public class ReportRepository : IReportRepository
             }
         };
     }
+
+    public async Task<IEnumerable<EmployeeReportDto>> GetAllEmployeesAsync()
+    {
+        var employees = await _context.Employees
+            .OrderBy(e => e.Names)
+            .ThenBy(e => e.LastNames)
+            .Select(e => new
+            {
+                e.Id,
+                e.Names,
+                e.LastNames,
+                e.IdCard,
+                e.Status,
+                CurrentPosition = e.PositionsOccupied!
+                    .Where(p => p.EndDate == null)
+                    .OrderByDescending(p => p.StartDate)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
+
+        return employees.Select(emp =>
+        {
+            var positionName = emp.CurrentPosition != null && emp.CurrentPosition.Position != null
+                ? emp.CurrentPosition.Position.Name
+                : "Unassigned";
+            var departmentName = emp.CurrentPosition != null && emp.CurrentPosition.Position != null
+                && emp.CurrentPosition.Position.Department != null
+                ? emp.CurrentPosition.Position.Department.Name
+                : "Unassigned";
+
+            return new EmployeeReportDto
+            {
+                Id = emp.Id,
+                FullName = $"{emp.Names} {emp.LastNames}",
+                Cedula = emp.IdCard,
+                Position = positionName,
+                Department = departmentName,
+                IsActive = emp.Status
+            };
+        });
+    }
 }

@@ -8,4 +8,5 @@ public interface IReportRepository
     Task<HiringTimeReportDto> GetAverageHiringTimeAsync();
     Task<IEnumerable<DepartmentPerformanceDto>> GetPerformanceByDepartmentAsync();
     Task<PaginatedResponse<EmployeeReportDto>> GetEmployeeReportAsync(Pagination pagination, bool? isActive);
+    Task<IEnumerable<EmployeeReportDto>> GetAllEmployeesAsync();
 }

@@ -9,12 +9,14 @@ namespace SIRU.Tests.UnitTests.Services.Reports
     public class ReportServiceTests
     {
         private readonly Mock<IReportRepository> _repositoryMock;
+        private readonly Mock<IPdfReportService> _pdfReportServiceMock;
         private readonly ReportService _service;
 
         public ReportServiceTests()
         {
             _repositoryMock = new Mock<IReportRepository>();
-            _service = new ReportService(_repositoryMock.Object);
+            _pdfReportServiceMock = new Mock<IPdfReportService>();
+            _service = new ReportService(_repositoryMock.Object, _pdfReportServiceMock.Object);
         }
 
         #region HU-14 — GetAverageHiringTimeAsync
@@ -231,6 +233,99 @@ namespace SIRU.Tests.UnitTests.Services.Reports
 
             Assert.Empty(result.Items);
             Assert.Equal(0, result.Pagination.TotalCount);
+        }
+
+        #endregion
+
+        #region HU-17 — Export Reports
+
+        [Fact]
+        public async Task ExportHiringTimeAsync_ReturnsPdfBytes()
+        {
+            var dto = new HiringTimeReportDto { AverageDays = 15.5f, TotalClosedVacancies = 4 };
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetAverageHiringTimeAsync()).ReturnsAsync(dto);
+            _pdfReportServiceMock.Setup(p => p.GenerateHiringTimeReport(dto)).Returns(pdfBytes);
+
+            var result = await _service.ExportHiringTimeAsync();
+
+            Assert.Equal(pdfBytes, result);
+        }
+
+        [Fact]
+        public async Task ExportHiringTimeAsync_WithZeroValues_ReturnsPdfBytes()
+        {
+            var dto = new HiringTimeReportDto { AverageDays = 0, TotalClosedVacancies = 0 };
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetAverageHiringTimeAsync()).ReturnsAsync(dto);
+            _pdfReportServiceMock.Setup(p => p.GenerateHiringTimeReport(dto)).Returns(pdfBytes);
+
+            var result = await _service.ExportHiringTimeAsync();
+
+            Assert.Equal(pdfBytes, result);
+        }
+
+        [Fact]
+        public async Task ExportPerformanceByDepartmentAsync_ReturnsPdfBytes()
+        {
+            var data = new List<DepartmentPerformanceDto>
+            {
+                new() { DepartmentName = "IT", AverageScore = 4.2f, EmployeeCount = 3 },
+                new() { DepartmentName = "HR", AverageScore = 3.8f, EmployeeCount = 2 }
+            };
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetPerformanceByDepartmentAsync()).ReturnsAsync(data);
+            _pdfReportServiceMock.Setup(p => p.GeneratePerformanceByDepartmentReport(data)).Returns(pdfBytes);
+
+            var result = await _service.ExportPerformanceByDepartmentAsync();
+
+            Assert.Equal(pdfBytes, result);
+        }
+
+        [Fact]
+        public async Task ExportPerformanceByDepartmentAsync_WithEmptyList_ReturnsPdfBytes()
+        {
+            var data = new List<DepartmentPerformanceDto>();
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetPerformanceByDepartmentAsync()).ReturnsAsync(data);
+            _pdfReportServiceMock.Setup(p => p.GeneratePerformanceByDepartmentReport(data)).Returns(pdfBytes);
+
+            var result = await _service.ExportPerformanceByDepartmentAsync();
+
+            Assert.Equal(pdfBytes, result);
+        }
+
+        [Fact]
+        public async Task ExportEmployeesAsync_ReturnsPdfBytes()
+        {
+            var data = new List<EmployeeReportDto>
+            {
+                new() { Id = "e1", FullName = "John Doe", Cedula = "ABC123", Position = "Developer", Department = "IT", IsActive = true },
+                new() { Id = "e2", FullName = "Jane Smith", Cedula = "XYZ789", Position = "Designer", Department = "Design", IsActive = true }
+            };
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetAllEmployeesAsync()).ReturnsAsync(data);
+            _pdfReportServiceMock.Setup(p => p.GenerateEmployeeReport(data)).Returns(pdfBytes);
+
+            var result = await _service.ExportEmployeesAsync();
+
+            Assert.Equal(pdfBytes, result);
+        }
+
+        [Fact]
+        public async Task ExportEmployeesAsync_WithUnassignedPosition_ReturnsPdfBytes()
+        {
+            var data = new List<EmployeeReportDto>
+            {
+                new() { Id = "e1", FullName = "Bob Jones", Cedula = "AAA111", Position = "Unassigned", Department = "Unassigned", IsActive = false }
+            };
+            var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46 };
+            _repositoryMock.Setup(r => r.GetAllEmployeesAsync()).ReturnsAsync(data);
+            _pdfReportServiceMock.Setup(p => p.GenerateEmployeeReport(data)).Returns(pdfBytes);
+
+            var result = await _service.ExportEmployeesAsync();
+
+            Assert.Equal(pdfBytes, result);
         }
 
         #endregion
