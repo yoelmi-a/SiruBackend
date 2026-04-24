@@ -12,6 +12,7 @@ using SIRU.Core.Application.Interfaces.Auth;
 using SIRU.Core.Domain.Settings;
 using SIRU.Infrastructure.Identity.Contexts;
 using SIRU.Infrastructure.Identity.Entities;
+using SIRU.Infrastructure.Identity.Seeds;
 using SIRU.Infrastructure.Identity.Services;
 using System.Text;
 
@@ -130,13 +131,11 @@ namespace SIRU.Infrastructure.Identity
         {
             using var scope = service.CreateScope();
             var servicesProvider = scope.ServiceProvider;
-            var userManager = servicesProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = servicesProvider.GetRequiredService<UserManager<AuthAccount>>();
             var roleManager = servicesProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            //var userService = servicesProvider.GetRequiredService<IUserService>();
 
-            //await DefaultRoles.SeedAsync(roleManager);
-            //await DefaultSuperAdmin.SeedAsync(userManager, userService);
-            //await DefaultBrokers.SeedAsync(servicesProvider);
+            await DefaultRoles.SeedAsync(roleManager);
+            await DefaultAdmin.SeedAsync(userManager);
         }
 
         #region Private methods
