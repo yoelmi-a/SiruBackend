@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIRU.Core.Application.Dtos.Departments;
 using SIRU.Core.Application.Interfaces.Departments;
+using SIRU.Presentation.Api.Handlers;
 
 namespace SIRU.Presentation.Api.Controllers.Departments.V1
 {
@@ -30,16 +31,13 @@ namespace SIRU.Presentation.Api.Controllers.Departments.V1
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _departmentService.GetByIdAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dto => Ok(dto));
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(DepartmentDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Create([FromBody] DepartmentInsertDto dto)
         {
             if (!ModelState.IsValid)
@@ -48,18 +46,15 @@ namespace SIRU.Presentation.Api.Controllers.Departments.V1
             }
 
             var result = await _departmentService.AddAsync(dto);
-            if (!result.IsSuccess)
-            {
-                return BadRequest(new { Errors = result.Errors });
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
+            return result.Handle(HttpContext.Request.Path, dto =>
+                CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto));
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -68,14 +63,7 @@ namespace SIRU.Presentation.Api.Controllers.Departments.V1
             }
 
             var result = await _departmentService.UpdateAsync(id, dto);
-            if (!result.IsSuccess)
-            {
-                if (result.Errors.Contains("not found"))
-                    return NotFound(new { Errors = result.Errors });
-                
-                return BadRequest(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
 
         [HttpDelete("{id}")]
@@ -84,11 +72,7 @@ namespace SIRU.Presentation.Api.Controllers.Departments.V1
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _departmentService.DeleteAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
     }
 }

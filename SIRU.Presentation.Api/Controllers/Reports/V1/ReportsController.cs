@@ -32,8 +32,16 @@ public class ReportsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DepartmentPerformanceDto>))]
     public async Task<IActionResult> GetPerformanceByDepartment()
     {
-        var result = await _reportService.GetPerformanceByDepartmentAsync();
-        return Ok(result);
+        try
+        {
+            var result = await _reportService.GetPerformanceByDepartmentAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting performance by department");
+            return StatusCode(500, new { message = "An error occurred while retrieving performance data." });
+        }
     }
 
     [HttpGet("employees")]

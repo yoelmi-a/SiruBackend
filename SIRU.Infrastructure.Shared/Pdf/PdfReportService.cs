@@ -8,6 +8,8 @@ namespace SIRU.Infrastructure.Shared.Pdf;
 
 public class PdfReportService : IPdfReportService
 {
+    private const string FontFamily = "Helvetica";
+
     public PdfReportService()
     {
         QuestPDF.Settings.License = LicenseType.Community;
@@ -21,7 +23,7 @@ public class PdfReportService : IPdfReportService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(40);
-                page.DefaultTextStyle(x => x.FontSize(11));
+                page.DefaultTextStyle(x => x.FontSize(11).FontFamily(FontFamily));
 
                 page.Header().Element(c => ComposeHeader(c, "Average Hiring Time Report"));
                 page.Content().Element(c => ComposeHiringTimeContent(c, data));
@@ -41,7 +43,7 @@ public class PdfReportService : IPdfReportService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(40);
-                page.DefaultTextStyle(x => x.FontSize(11));
+                page.DefaultTextStyle(x => x.FontSize(11).FontFamily(FontFamily));
 
                 page.Header().Element(c => ComposeHeader(c, "Performance by Department Report"));
                 page.Content().Element(c => ComposePerformanceContent(c, dataList));
@@ -61,7 +63,7 @@ public class PdfReportService : IPdfReportService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(40);
-                page.DefaultTextStyle(x => x.FontSize(11));
+                page.DefaultTextStyle(x => x.FontSize(11).FontFamily(FontFamily));
 
                 page.Header().Element(c => ComposeHeader(c, "General Employee Report"));
                 page.Content().Element(c => ComposeEmployeeContent(c, dataList));

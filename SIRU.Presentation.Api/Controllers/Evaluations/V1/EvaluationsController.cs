@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIRU.Core.Application.Dtos.Evaluations;
 using SIRU.Core.Application.Interfaces.Evaluations;
+using SIRU.Presentation.Api.Handlers;
 
 namespace SIRU.Presentation.Api.Controllers.Evaluations.V1;
 
@@ -28,16 +29,7 @@ public class EvaluationsController : ControllerBase
         }
 
         var result = await _evaluationService.AddAsync(dto);
-        if (!result.IsSuccess)
-        {
-            var errorMessage = result.Errors.FirstOrDefault() ?? "";
-            if (errorMessage.Contains("no encontrado") || errorMessage.Contains("posición activa"))
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return BadRequest(new { Errors = result.Errors });
-        }
-
-        return CreatedAtAction(nameof(Create), new { id = result.Value!.Id }, result.Value);
+        return result.Handle(HttpContext.Request.Path, evaluationDto =>
+            CreatedAtAction(nameof(Create), new { id = evaluationDto.Id }, evaluationDto));
     }
 }

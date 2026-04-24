@@ -55,6 +55,28 @@ namespace SIRU.Presentation.Api.Handlers
                         Instance = path
                     }){
                         StatusCode = StatusCodes.Status423Locked
+                    },
+
+                    ErrorType.Conflict => new ObjectResult(new ProblemDetails
+                    {
+                        Title = "Conflict",
+                        Detail = string.Join(", ", result.Errors),
+                        Status = StatusCodes.Status409Conflict,
+                        Instance = path
+                    })
+                    {
+                        StatusCode = StatusCodes.Status409Conflict
+                    },
+
+                    _ => new ObjectResult(new ProblemDetails
+                    {
+                        Title = "Error",
+                        Detail = string.Join(", ", result.Errors),
+                        Status = StatusCodes.Status500InternalServerError,
+                        Instance = path
+                    })
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError
                     }
                 };
             }
@@ -112,6 +134,28 @@ namespace SIRU.Presentation.Api.Handlers
                     })
                     {
                         StatusCode = StatusCodes.Status423Locked
+                    },
+
+                    ErrorType.Conflict => new ObjectResult(new ProblemDetails
+                    {
+                        Title = "Conflict",
+                        Detail = string.Join(", ", result.Errors),
+                        Status = StatusCodes.Status409Conflict,
+                        Instance = path
+                    })
+                    {
+                        StatusCode = StatusCodes.Status409Conflict
+                    },
+
+                    _ => new ObjectResult(new ProblemDetails
+                    {
+                        Title = "Error",
+                        Detail = string.Join(", ", result.Errors),
+                        Status = StatusCodes.Status500InternalServerError,
+                        Instance = path
+                    })
+                    {
+                        StatusCode = StatusCodes.Status500InternalServerError
                     }
                 };
             }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIRU.Core.Application.Dtos.Candidates;
 using SIRU.Core.Application.Interfaces.Candidates;
+using SIRU.Presentation.Api.Handlers;
 
 namespace SIRU.Presentation.Api.Controllers.Candidates.V1
 {
@@ -30,11 +31,7 @@ namespace SIRU.Presentation.Api.Controllers.Candidates.V1
         public async Task<IActionResult> GetById(string id)
         {
             var result = await _candidateService.GetByIdAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dto => Ok(dto));
         }
 
         [HttpPost]
@@ -48,12 +45,8 @@ namespace SIRU.Presentation.Api.Controllers.Candidates.V1
             }
 
             var result = await _candidateService.AddAsync(dto);
-            if (!result.IsSuccess)
-            {
-                return BadRequest(new { Errors = result.Errors });
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
+            return result.Handle(HttpContext.Request.Path, dto =>
+                CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto));
         }
 
         [HttpPut("{id}")]
@@ -68,14 +61,7 @@ namespace SIRU.Presentation.Api.Controllers.Candidates.V1
             }
 
             var result = await _candidateService.UpdateAsync(id, dto);
-            if (!result.IsSuccess)
-            {
-                 if (result.Errors != null && result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
-                    return NotFound(new { Errors = result.Errors });
-
-                return BadRequest(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
 
         [HttpDelete("{id}")]
@@ -84,11 +70,7 @@ namespace SIRU.Presentation.Api.Controllers.Candidates.V1
         public async Task<IActionResult> Delete(string id)
         {
             var result = await _candidateService.DeleteAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
     }
 }

@@ -72,6 +72,20 @@ public class Result
     public static Result Failure(string error) => new Result(false, [error]);
 
     /// <summary>
+    /// Factory method para crear un Result fallido sin valor de retorno
+    /// </summary>
+    /// <param name="errors">Lista con los errores ocurridos</param>
+    /// <param name="errorType">Tipo de error para mapear a código http</param>
+    public static Result Failure(ICollection<string> errors, ErrorType errorType) => new Result(false, errors, errorTypeCode: errorType);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido sin valor de retorno
+    /// </summary>
+    /// <param name="error">Mensaje con el error ocurrido</param>
+    /// <param name="errorType">Tipo de error para mapear a código http</param>
+    public static Result Failure(string error, ErrorType errorType) => new Result(false, [error], errorTypeCode: errorType);
+
+    /// <summary>
     /// Factory method para crear un Result fallido con error de tipo BadRequest sin valor de retorno
     /// </summary>
     /// <param name="error">Mensaje con el error ocurrido</param>
@@ -82,6 +96,18 @@ public class Result
     /// </summary>
     /// <param name="errors">Lista de errores</param>
     public static Result BadRequest(List<string> errors) => new Result(false, errors, errorTypeCode: ErrorType.BadRequest);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con error de tipo Conflict sin valor de retorno
+    /// </summary>
+    /// <param name="error">Mensaje con el error ocurrido</param>
+    public static Result Conflict(string error) => new Result(false, [error], errorTypeCode: ErrorType.Conflict);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con error de tipo Conflict sin valor de retorno
+    /// </summary>
+    /// <param name="errors">Lista de errores</param>
+    public static Result Conflict(List<string> errors) => new Result(false, errors, errorTypeCode: ErrorType.Conflict);
 
     /// <summary>
     /// Factory method para crear un Result fallido con error de tipo NotFound sin valor de retorno
@@ -108,14 +134,28 @@ public class Result
     /// </summary>
     /// <typeparam name="T">Tipo que debería retornar en caso de éxito</typeparam>
     /// <param name="errors">Lista de errores</param>
-    public static Result<T> Failure<T>(List<string> errors) => new Result<T>(false, errors);
+    public static Result<T> Failure<T>(List<string> errors) => new Result<T>(false, errors, errorTypeCode: ErrorType.BadRequest);
 
     /// <summary>
     /// Factory method para crear un Result fallido con tipo específico
     /// </summary>
     /// <typeparam name="T">Tipo que debería retornar en caso de éxito</typeparam>
     /// <param name="error">Mensaje con el error ocurrido</param>
-    public static Result<T> Failure<T>(string error) => new Result<T>(false, [error]);
+    public static Result<T> Failure<T>(string error) => new Result<T>(false, [error], errorTypeCode: ErrorType.BadRequest);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con tipo específico
+    /// </summary>
+    /// <param name="errors">Lista con los errores ocurridos</param>
+    /// <param name="errorType">Tipo de error para mapear a código http</param>
+    public static Result<T> Failure<T>(ICollection<string> errors, ErrorType errorType) => new Result<T>(false, errors, errorTypeCode: errorType);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con tipo específico
+    /// </summary>
+    /// <param name="error">Mensaje con el error ocurrido</param>
+    /// <param name="errorType">Tipo de error para mapear a código http</param>
+    public static Result<T> Failure<T>(string error, ErrorType errorType) => new Result<T>(false, [error], errorTypeCode: errorType);
 
     /// <summary>
     /// Factory method para crear un Result fallido con tipo específico y error de tipo NotFound
@@ -144,6 +184,20 @@ public class Result
     /// <typeparam name="T">Tipo que debería retornar en caso de éxito</typeparam>
     /// <param name="error">Mensaje con el error ocurrido</param>
     public static Result<T> BadRequest<T>(string error) => new Result<T>(false, [error], errorTypeCode: ErrorType.BadRequest);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con tipo específico y error de tipo Conflict
+    /// </summary>
+    /// <typeparam name="T">Tipo que debería retornar en caso de éxito</typeparam>
+    /// <param name="errors">Lista de errores</param>
+    public static Result<T> Conflict<T>(List<string> errors) => new Result<T>(false, errors, errorTypeCode: ErrorType.Conflict);
+
+    /// <summary>
+    /// Factory method para crear un Result fallido con tipo específico y error de tipo Conflict
+    /// </summary>
+    /// <typeparam name="T">Tipo que debería retornar en caso de éxito</typeparam>
+    /// <param name="error">Mensaje con el error ocurrido</param>
+    public static Result<T> Conflict<T>(string error) => new Result<T>(false, [error], errorTypeCode: ErrorType.Conflict);
 
     /// <summary>
     /// Factory method para crear un Result fallido con tipo específico y error de tipo Forbidden

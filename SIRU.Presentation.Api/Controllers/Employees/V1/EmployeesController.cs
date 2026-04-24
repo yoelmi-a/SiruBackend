@@ -4,6 +4,7 @@ using SIRU.Core.Application.Dtos.Evaluations;
 using SIRU.Core.Application.Interfaces.Evaluations;
 using SIRU.Core.Application.Interfaces.Employees;
 using SIRU.Core.Domain.Common.Pagination;
+using SIRU.Presentation.Api.Handlers;
 
 namespace SIRU.Presentation.Api.Controllers.Employees.V1
 {
@@ -11,15 +12,15 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class EmployeesController : ControllerBase
-{
-    private readonly IEmployeeService _employeeService;
-    private readonly IEvaluationService _evaluationService;
-
-    public EmployeesController(IEmployeeService employeeService, IEvaluationService evaluationService)
     {
-        _employeeService = employeeService;
-        _evaluationService = evaluationService;
-    }
+        private readonly IEmployeeService _employeeService;
+        private readonly IEvaluationService _evaluationService;
+
+        public EmployeesController(IEmployeeService employeeService, IEvaluationService evaluationService)
+        {
+            _employeeService = employeeService;
+            _evaluationService = evaluationService;
+        }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<EmployeeListDto>))]
@@ -36,11 +37,7 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
         public async Task<IActionResult> GetById(string id)
         {
             var result = await _employeeService.GetByIdAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dto => Ok(dto));
         }
 
         [HttpPost]
@@ -55,11 +52,8 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
             }
 
             var result = await _employeeService.AddAsync(dto);
-            if (!result.IsSuccess)
-            {
-                return Conflict(new { Errors = result.Errors });
-            }
-            return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
+            return result.Handle(HttpContext.Request.Path, dto =>
+                CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto));
         }
 
         [HttpPut("{id}")]
@@ -75,15 +69,7 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
             }
 
             var result = await _employeeService.UpdateAsync(id, dto);
-            if (!result.IsSuccess)
-            {
-                if (result.Errors.Contains("no encontrado"))
-                {
-                    return NotFound(new { Errors = result.Errors });
-                }
-                return Conflict(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dto => Ok(dto));
         }
 
         [HttpDelete("{id}")]
@@ -92,11 +78,7 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
         public async Task<IActionResult> Delete(string id)
         {
             var result = await _employeeService.DeleteAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
 
         [HttpGet("{id}/history")]
@@ -105,11 +87,7 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
         public async Task<IActionResult> GetHistory(string id)
         {
             var result = await _employeeService.GetHistoryAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dtos => Ok(dtos));
         }
 
         [HttpGet("{id}/evaluations")]
@@ -118,11 +96,25 @@ namespace SIRU.Presentation.Api.Controllers.Employees.V1
         public async Task<IActionResult> GetEvaluations(string id)
         {
             var result = await _evaluationService.GetByEmployeeIdAsync(id);
-            if (!result.IsSuccess)
+            return result.Handle(HttpContext.Request.Path, dtos => Ok(dtos));
+        }
+
+        [HttpPost("{id}/positions")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EmployeePositionDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AssignPosition(string id, [FromBody] EmployeePositionInsertDto dto)
+        {
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { Errors = result.Errors });
+                return BadRequest(ModelState);
             }
-            return Ok(result.Value);
+
+            dto.EmployeeId = id;
+            var result = await _employeeService.AssignPositionAsync(dto);
+            return result.Handle(HttpContext.Request.Path, positionDto =>
+                CreatedAtAction(nameof(GetById), new { id = id }, positionDto));
         }
     }
 }

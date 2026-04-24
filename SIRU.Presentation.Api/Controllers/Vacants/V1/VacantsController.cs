@@ -4,6 +4,7 @@ using SIRU.Core.Application.Dtos.Vacants;
 using SIRU.Core.Application.Dtos.Vacancies;
 using SIRU.Core.Application.Interfaces.Vacants;
 using SIRU.Core.Domain.Common.Pagination;
+using SIRU.Presentation.Api.Handlers;
 
 namespace SIRU.Presentation.Api.Controllers.Vacants.V1
 {
@@ -19,9 +20,6 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             _vacantService = vacantService;
         }
 
-        /// <summary>
-        /// Obtiene todas las vacantes registradas.
-        /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VacantDto>))]
         public async Task<IActionResult> GetAll()
@@ -30,25 +28,15 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             return Ok(result);
         }
 
-        /// <summary>
-        /// Obtiene una vacante específica por su ID.
-        /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VacantDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string id)
         {
             var result = await _vacantService.GetByIdAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, dto => Ok(dto));
         }
 
-        /// <summary>
-        /// Crea una nueva vacante.
-        /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(VacantDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -60,12 +48,10 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             }
 
             var result = await _vacantService.AddAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, result.Value);
+            return result.Handle(HttpContext.Request.Path, vacantDto =>
+                CreatedAtAction(nameof(GetById), new { id = vacantDto.Id }, vacantDto));
         }
 
-        /// <summary>
-        /// Actualiza una vacante existente.
-        /// </summary>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -78,32 +64,18 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             }
 
             var result = await _vacantService.UpdateAsync(id, dto);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
 
-        /// <summary>
-        /// Elimina una vacante por su ID.
-        /// </summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(string id)
         {
             var result = await _vacantService.DeleteAsync(id);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-            return NoContent();
+            return result.Handle(HttpContext.Request.Path, () => NoContent());
         }
 
-        /// <summary>
-        /// Registers a candidate application for a vacancy.
-        /// </summary>
         [HttpPost("{vacancyId}/applications")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(VacancyApplicationResultDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -131,26 +103,15 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             return CreatedAtAction(nameof(GetById), new { id = vacancyId }, result.Value);
         }
 
-        /// <summary>
-        /// Recalculates ranking scores for all candidates of a vacancy.
-        /// </summary>
         [HttpPost("{vacancyId}/recalculate-scores")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RecalculateScores(string vacancyId)
         {
             var result = await _vacantService.RecalculateScoresAsync(vacancyId);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-
-            return Accepted();
+            return result.Handle(HttpContext.Request.Path, () => Accepted());
         }
 
-        /// <summary>
-        /// Returns a paginated list of candidates for a vacancy, ordered by score descending.
-        /// </summary>
         [HttpGet("{vacancyId}/applications")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<VacancyApplicationResultDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -158,12 +119,7 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
         {
             var pagination = new Pagination(page, pageSize);
             var result = await _vacantService.GetApplicationsByVacancyAsync(vacancyId, pagination);
-            if (!result.IsSuccess)
-            {
-                return NotFound(new { Errors = result.Errors });
-            }
-
-            return Ok(result.Value);
+            return result.Handle(HttpContext.Request.Path, response => Ok(response));
         }
     }
 }

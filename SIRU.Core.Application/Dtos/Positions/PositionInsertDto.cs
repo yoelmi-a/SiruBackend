@@ -8,7 +8,7 @@ namespace SIRU.Core.Application.Dtos.Positions
         [MinLength(1, ErrorMessage = "El nombre de la posición no puede estar vacío.")]
         public required string Name { get; set; }
 
-        [Range(0, double.MaxValue, ErrorMessage = "El salario debe ser un valor positivo.")]
+        [Range(1, double.MaxValue, ErrorMessage = "El salario debe ser un valor positivo.")]
         public decimal Salary { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "El ID del departamento debe ser válido.")]

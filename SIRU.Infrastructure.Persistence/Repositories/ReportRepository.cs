@@ -41,27 +41,24 @@ public class ReportRepository : IReportRepository
 
     public async Task<IEnumerable<DepartmentPerformanceDto>> GetPerformanceByDepartmentAsync()
     {
-        var results = await _context.Evaluations
+        var evaluations = await _context.Evaluations
+            .Include(e => e.EmployeePosition)
+                .ThenInclude(ep => ep!.Position)
+                    .ThenInclude(p => p!.Department)
             .Where(e => e.EmployeePosition != null)
-            .Select(e => new
-            {
-                DepartmentName = e.EmployeePosition!.Position != null
-                    ? e.EmployeePosition.Position.Department != null
-                        ? e.EmployeePosition.Position.Department.Name
-                        : "N/A"
-                    : "N/A",
-                e.AverageScore
-            })
-            .Where(x => x.DepartmentName != "N/A")
-            .GroupBy(x => x.DepartmentName)
+            .ToListAsync();
+
+        var results = evaluations
+            .Where(e => e.EmployeePosition?.Position?.Department != null)
+            .GroupBy(e => e.EmployeePosition!.Position!.Department!.Name)
             .Select(g => new DepartmentPerformanceDto
             {
                 DepartmentName = g.Key,
-                AverageScore = (float)Math.Round(g.Average(x => x.AverageScore), 2),
+                AverageScore = (float)Math.Round(g.Average(e => e.AverageScore), 2),
                 EmployeeCount = g.Count()
             })
             .OrderByDescending(d => d.AverageScore)
-            .ToListAsync();
+            .ToList();
 
         return results;
     }

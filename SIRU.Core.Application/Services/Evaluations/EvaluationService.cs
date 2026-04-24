@@ -33,7 +33,7 @@ public class EvaluationService : IEvaluationService
         var currentPosition = await _employeeRepository.GetCurrentPositionAsync(dto.EmployeeId);
         if (currentPosition == null)
         {
-            return Result.Failure<EvaluationDto>(new List<string> { "Empleado no encontrado o no tiene posición activa." });
+            return Result.NotFound<EvaluationDto>(new List<string> { "Empleado no encontrado o no tiene posición activa." });
         }
 
         var existingCriteria = await _criterionRepository.FindAsync(
@@ -90,7 +90,7 @@ public class EvaluationService : IEvaluationService
         var employee = await _employeeRepository.GetByIdAsync(employeeId);
         if (employee == null)
         {
-            return Result.Failure<IEnumerable<EvaluationHistoryDto>>(new List<string> { "Empleado no encontrado." });
+            return Result.NotFound<IEnumerable<EvaluationHistoryDto>>(new List<string> { "Empleado no encontrado." });
         }
 
         var evaluations = await _employeeRepository.GetEmployeeEvaluationsAsync(employeeId);

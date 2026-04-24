@@ -23,7 +23,7 @@ namespace SIRU.Core.Application.Services.Positions
             var department = await _departmentRepository.GetByIdAsync(dto.DepartmentId);
             if (department == null)
             {
-                return Result.Failure<Position>(new List<string> { $"No se encontró el departamento con ID {dto.DepartmentId}." });
+                return Result.NotFound<Position>(new List<string> { $"No se encontró el departamento con ID {dto.DepartmentId}." });
             }
 
             return await base.InsertPreProcessing(entity, dto);
@@ -34,7 +34,7 @@ namespace SIRU.Core.Application.Services.Positions
             var department = await _departmentRepository.GetByIdAsync(dto.DepartmentId);
             if (department == null)
             {
-                return Result.Failure<Position>(new List<string> { $"No se encontró el departamento con ID {dto.DepartmentId}." });
+                return Result.NotFound<Position>(new List<string> { $"No se encontró el departamento con ID {dto.DepartmentId}." });
             }
 
             return await base.UpdatePreProcessing(entity, dto);

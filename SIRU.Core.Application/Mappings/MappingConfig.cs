@@ -29,7 +29,8 @@ public static class MappingConfig
             .Map(dest => dest.Names, src => src.Names)
             .Map(dest => dest.LastNames, src => src.LastNames);
 
-        TypeAdapterConfig<CandidateInsertDto, DomainEntities.Candidate>.NewConfig();
+        TypeAdapterConfig<CandidateInsertDto, DomainEntities.Candidate>.NewConfig()
+            .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString());
         TypeAdapterConfig<CandidateUpdateDto, DomainEntities.Candidate>.NewConfig();
 
         TypeAdapterConfig<DomainEntities.Department, DepartmentDto>.NewConfig();
@@ -43,16 +44,19 @@ public static class MappingConfig
         TypeAdapterConfig<PositionUpdateDto, DomainEntities.Position>.NewConfig();
 
         TypeAdapterConfig<EmployeeInsertDto, DomainEntities.Employee>.NewConfig()
+            .Map(dest => dest.Id, src => Guid.CreateVersion7().ToString())
             .Map(dest => dest.Names, src => src.FirstName)
             .Map(dest => dest.LastNames, src => src.LastName)
             .Map(dest => dest.IdCard, src => src.Cedula)
-            .Map(dest => dest.Birthdate, src => src.DateOfBirth);
+            .Map(dest => dest.Birthdate, src => src.DateOfBirth)
+            .Map(dest => dest.Email, src => src.Email);
 
         TypeAdapterConfig<EmployeeUpdateDto, DomainEntities.Employee>.NewConfig()
             .Map(dest => dest.Names, src => src.FirstName)
             .Map(dest => dest.LastNames, src => src.LastName)
             .Map(dest => dest.IdCard, src => src.Cedula)
-            .Map(dest => dest.Birthdate, src => src.DateOfBirth);
+            .Map(dest => dest.Birthdate, src => src.DateOfBirth)
+            .Map(dest => dest.Email, src => src.Email);
 
         TypeAdapterConfig<DomainEntities.Employee, EmployeeDto>.NewConfig()
             .Map(dest => dest.FirstName, src => src.Names)
@@ -67,6 +71,11 @@ public static class MappingConfig
             .Map(dest => dest.IsActive, src => src.Status);
 
         TypeAdapterConfig<DomainEntities.EmployeePosition, EmployeeHistoryDto>.NewConfig()
+            .Map(dest => dest.PositionName, src => src.Position != null ? src.Position.Name : null)
+            .Map(dest => dest.DepartmentName, src => src.Position != null && src.Position.Department != null ? src.Position.Department.Name : null);
+
+        TypeAdapterConfig<DomainEntities.EmployeePosition, EmployeePositionDto>.NewConfig()
+            .Map(dest => dest.EmployeeFullName, src => src.Employee != null ? $"{src.Employee.Names} {src.Employee.LastNames}" : null!)
             .Map(dest => dest.PositionName, src => src.Position != null ? src.Position.Name : null)
             .Map(dest => dest.DepartmentName, src => src.Position != null && src.Position.Department != null ? src.Position.Department.Name : null);
 

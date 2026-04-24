@@ -28,6 +28,7 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
             .Where(e => e.Id == employeeId)
             .SelectMany(e => e.PositionsOccupied!)
             .Where(ep => ep.EndDate == null)
+            .Include(ep => ep.Employee)
             .Include(ep => ep.Position!)
                 .ThenInclude(p => p.Department!)
             .OrderByDescending(ep => ep.StartDate)
@@ -44,5 +45,11 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
                 .ThenInclude(ec => ec.Criterion!)
             .OrderByDescending(ev => ev.Date)
             .ToListAsync();
+    }
+
+    public async Task AddEmployeePositionAsync(EmployeePosition employeePosition)
+    {
+        await _context.Set<EmployeePosition>().AddAsync(employeePosition);
+        await _context.SaveChangesAsync();
     }
 }

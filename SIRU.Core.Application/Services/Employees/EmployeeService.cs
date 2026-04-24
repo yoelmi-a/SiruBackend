@@ -12,10 +12,12 @@ namespace SIRU.Core.Application.Services.Employees
     public class EmployeeService : ServiceBase<Employee, string, EmployeeDto, EmployeeInsertDto, EmployeeUpdateDto>, IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IPositionRepository _positionRepository;
 
-        public EmployeeService(IGenericRepository<Employee> repository, IEmployeeRepository employeeRepository) : base(repository)
+        public EmployeeService(IGenericRepository<Employee> repository, IEmployeeRepository employeeRepository, IPositionRepository positionRepository) : base(repository)
         {
             _employeeRepository = employeeRepository;
+            _positionRepository = positionRepository;
         }
 
         public async Task<Result<IEnumerable<EmployeeHistoryDto>>> GetHistoryAsync(string employeeId)
@@ -23,7 +25,7 @@ namespace SIRU.Core.Application.Services.Employees
             var employee = await _repository.GetByIdAsync(employeeId);
             if (employee == null)
             {
-                return Result.Failure<IEnumerable<EmployeeHistoryDto>>(new List<string> { "Entity not found." });
+                return Result.NotFound<IEnumerable<EmployeeHistoryDto>>(new List<string> { "Entity not found." });
             }
 
             var history = await _employeeRepository.GetEmployeeHistoryWithDetailsAsync(employeeId);
@@ -47,6 +49,7 @@ namespace SIRU.Core.Application.Services.Employees
                 ? await _repository.PaginateWhere(pagination, e => e.Status == isActive.Value)
                 : await _repository.Paginate(pagination);
 
+            pagination.TotalCount = paginatedEmployees.Items.Count();
             var paginatedDtos = new PaginatedResponse<EmployeeListDto>
             {
                 Items = paginatedEmployees.Items.Select(e => e.Adapt<EmployeeListDto>()),
@@ -60,7 +63,7 @@ namespace SIRU.Core.Application.Services.Employees
             var existingCedula = await _repository.FindAsync(e => e.IdCard == dto.Cedula);
             if (existingCedula.Any())
             {
-                return Result.Failure<Employee>(new List<string> { "La cédula ya está registrada" });
+                return Result.Conflict<Employee>(new List<string> { "La cédula ya está registrada" });
             }
             entity.Status = true;
             return Result.Success<Employee>(entity);
@@ -71,9 +74,43 @@ namespace SIRU.Core.Application.Services.Employees
             var existingCedula = await _repository.FindAsync(e => e.IdCard == dto.Cedula && e.Id != entity.Id);
             if (existingCedula.Any())
             {
-                return Result.Failure<Employee>(new List<string> { "La cédula ya está registrada" });
+                return Result.Conflict<Employee>(new List<string> { "La cédula ya está registrada" });
             }
             return Result.Success<Employee>(entity);
+        }
+
+        public async Task<Result<EmployeePositionDto>> AssignPositionAsync(EmployeePositionInsertDto dto)
+        {
+            var employee = await _repository.GetByIdAsync(dto.EmployeeId);
+            if (employee == null)
+            {
+                return Result.NotFound<EmployeePositionDto>(new List<string> { "Empleado no encontrado." });
+            }
+
+            var position = await _positionRepository.GetByIdWithDepartmentAsync(dto.PositionId);
+            if (position == null)
+            {
+                return Result.NotFound<EmployeePositionDto>(new List<string> { "Cargo no encontrado." });
+            }
+
+            var currentPosition = await _employeeRepository.GetCurrentPositionAsync(dto.EmployeeId);
+            if (currentPosition != null && currentPosition.PositionId == dto.PositionId)
+            {
+                return Result.Conflict<EmployeePositionDto>(new List<string> { "El empleado ya tiene este cargo asignado." });
+            }
+
+            var employeePosition = new EmployeePosition
+            {
+                Id = 0,
+                EmployeeId = dto.EmployeeId,
+                PositionId = dto.PositionId,
+                StartDate = dto.StartDate
+            };
+
+            await _employeeRepository.AddEmployeePositionAsync(employeePosition);
+
+            var resultDto = employeePosition.Adapt<EmployeePositionDto>();
+            return Result<EmployeePositionDto>.Success(resultDto);
         }
     }
 }

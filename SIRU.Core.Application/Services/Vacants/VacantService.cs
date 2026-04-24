@@ -103,7 +103,7 @@ public class VacantService : ServiceBase<Vacant, string, VacantDto, SaveVacantDt
         var vacant = await _repository.GetByIdAsync(vacantId);
         if (vacant is null)
         {
-            return Result.Failure(new List<string> { "Vacancy not found." });
+            return Result.NotFound("Vacancy not found.");
         }
 
         var candidates = await _vacancyCandidateRepository.GetAllByVacancyIdAsync(vacantId);
@@ -120,7 +120,7 @@ public class VacantService : ServiceBase<Vacant, string, VacantDto, SaveVacantDt
         var vacant = await _repository.GetByIdAsync(vacantId);
         if (vacant is null)
         {
-            return Result.Failure<PaginatedResponse<VacancyApplicationResultDto>>(new List<string> { "Vacancy not found." });
+            return Result.NotFound<PaginatedResponse<VacancyApplicationResultDto>>(new List<string> { "Vacancy not found." });
         }
 
         var paginatedResult = await _vacancyCandidateRepository.GetPaginatedByVacancyIdAsync(vacantId, pagination);

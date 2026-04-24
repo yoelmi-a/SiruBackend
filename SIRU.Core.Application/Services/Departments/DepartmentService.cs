@@ -21,7 +21,7 @@ namespace SIRU.Core.Application.Services.Departments
             var exists = await _departmentRepository.FindAsync(d => d.Name.ToLower() == dto.Name.ToLower());
             if (exists.Any())
             {
-                return Result.Failure<Department>(new List<string> { $"Ya existe un departamento con el nombre '{dto.Name}'." });
+                return Result.Conflict<Department>(new List<string> { $"Ya existe un departamento con el nombre '{dto.Name}'." });
             }
 
             return await base.InsertPreProcessing(entity, dto);
@@ -32,7 +32,7 @@ namespace SIRU.Core.Application.Services.Departments
             var exists = await _departmentRepository.FindAsync(d => d.Name.ToLower() == dto.Name.ToLower() && d.Id != entity.Id);
             if (exists.Any())
             {
-                return Result.Failure<Department>(new List<string> { $"Ya existe otro departamento con el nombre '{dto.Name}'." });
+                return Result.Conflict<Department>(new List<string> { $"Ya existe otro departamento con el nombre '{dto.Name}'." });
             }
 
             return await base.UpdatePreProcessing(entity, dto);

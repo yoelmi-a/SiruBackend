@@ -28,4 +28,6 @@ Task<IEnumerable<EmployeePosition>> GetEmployeeHistoryWithDetailsAsync(string em
     /// <param name="employeeId">The ULID string identifier of the employee.</param>
     /// <returns>A list of Evaluation records.</returns>
     Task<IEnumerable<Evaluation>> GetEmployeeEvaluationsAsync(string employeeId);
+
+    Task AddEmployeePositionAsync(EmployeePosition employeePosition);
 }

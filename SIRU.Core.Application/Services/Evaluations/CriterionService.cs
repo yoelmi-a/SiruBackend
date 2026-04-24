@@ -25,13 +25,13 @@ public class CriterionService : ServiceBase<Criterion, int, CriterionDto, Criter
         var criterion = await _criterionRepository.GetByIdAsync(id);
         if (criterion == null)
         {
-            return Result.Failure(new List<string> { "Entity not found." });
+            return Result.NotFound("Entity not found.");
         }
 
         var isInUse = await _criterionRepository.FindAsync(c => c.Evaluations != null && c.Evaluations.Any(e => e.CriteriaId == id));
         if (isInUse.Any())
         {
-            return Result.Failure(new List<string> { "No se puede eliminar el criterio porque está siendo utilizado en al menos una evaluación." });
+            return Result.Conflict("No se puede eliminar el criterio porque está siendo utilizado en al menos una evaluación.");
         }
 
         await _criterionRepository.RemoveAsync(criterion);
@@ -43,7 +43,7 @@ public class CriterionService : ServiceBase<Criterion, int, CriterionDto, Criter
         var existing = await _criterionRepository.FindAsync(c => c.Name == dto.Name);
         if (existing.Any())
         {
-            return Result.Failure<Criterion>(new List<string> { "El nombre del criterio ya está registrado." });
+            return Result.Conflict<Criterion>(new List<string> { "El nombre del criterio ya está registrado." });
         }
         return Result<Criterion>.Success(entity);
     }
@@ -53,7 +53,7 @@ public class CriterionService : ServiceBase<Criterion, int, CriterionDto, Criter
         var existing = await _criterionRepository.FindAsync(c => c.Name == dto.Name && c.Id != entity.Id);
         if (existing.Any())
         {
-            return Result.Failure<Criterion>(new List<string> { "El nombre del criterio ya está registrado." });
+            return Result.Conflict<Criterion>(new List<string> { "El nombre del criterio ya está registrado." });
         }
         return Result<Criterion>.Success(entity);
     }

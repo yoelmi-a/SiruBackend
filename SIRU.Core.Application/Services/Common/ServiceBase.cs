@@ -1,5 +1,6 @@
 using Mapster;
 using SIRU.Core.Application.Interfaces.Common;
+using SIRU.Core.Domain.Common.Enums;
 using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Core.Domain.Common.Results;
 using SIRU.Core.Domain.Interfaces;
@@ -36,7 +37,7 @@ namespace SIRU.Core.Application.Services.Common
             var resPreProcessing = await InsertPreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
-                return Result.Failure<TDto>(resPreProcessing.Errors.ToList());
+                return Result.Failure<TDto>(resPreProcessing.Errors.ToList(), resPreProcessing.ErrorTypeCode ?? ErrorType.BadRequest);
             }
             await _repository.AddAsync(entity);
             var resultDto = entity.Adapt<TDto>();
@@ -53,7 +54,7 @@ namespace SIRU.Core.Application.Services.Common
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
             {
-                return Result.Failure(new List<string> { "Entity not found." });
+                return Result.NotFound("Entity not found.");
             }
             await _repository.RemoveAsync(entity);
             return Result.Success();
@@ -67,7 +68,7 @@ namespace SIRU.Core.Application.Services.Common
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
             {
-                return Result.Failure<TDto>(new List<string> { "Entity not found." });
+                return Result.NotFound<TDto>(new List<string> { "Entity not found." });
             }
             var dto = entity.Adapt<TDto>();
             return Result<TDto>.Success(dto);
@@ -78,13 +79,13 @@ namespace SIRU.Core.Application.Services.Common
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null)
             {
-                return Result.Failure<TDto>(new List<string> { "Entity not found." });
+                return Result.NotFound<TDto>(new List<string> { "Entity not found." });
             }
             dto.Adapt(entity);
             var resPreProcessing = await UpdatePreProcessing(entity, dto);
             if (!resPreProcessing.IsSuccess)
             {
-                return Result.Failure<TDto>(resPreProcessing.Errors.ToList());
+                return Result.Failure<TDto>(resPreProcessing.Errors.ToList(), resPreProcessing.ErrorTypeCode ?? ErrorType.BadRequest);
             }
             await _repository.UpdateAsync(entity);
             var resultDto = entity.Adapt<TDto>();

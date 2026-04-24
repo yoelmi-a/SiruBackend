@@ -22,6 +22,7 @@ namespace SIRU.Core.Application.Dtos.Employees
         [Required(ErrorMessage = "La fecha de nacimiento es requerida.")]
         public DateTime DateOfBirth { get; set; }
 
-        public string? Email { get; set; }
+        [Required(ErrorMessage = "El correo electrónico es requerido.")]
+        public required string Email { get; set; }
     }
 }

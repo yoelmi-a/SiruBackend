@@ -11,5 +11,6 @@ namespace SIRU.Core.Application.Interfaces.Employees
         Task<PaginatedResponse<EmployeeListDto>> Paginate(Pagination pagination, bool? isActive = null);
         Task<Result<IEnumerable<EmployeeListDto>>> GetAllAsync(bool? isActive = null);
         Task<Result<IEnumerable<EmployeeHistoryDto>>> GetHistoryAsync(string employeeId);
+        Task<Result<EmployeePositionDto>> AssignPositionAsync(EmployeePositionInsertDto dto);
     }
 }

@@ -13,6 +13,7 @@ namespace SIRU.Tests.UnitTests.Services.Employees
     {
         private readonly Mock<IGenericRepository<Employee>> _repositoryMock;
         private readonly Mock<IEmployeeRepository> _employeeRepositoryMock;
+        private readonly Mock<IPositionRepository> _positionRepositoryMock;
         private readonly EmployeeService _service;
 
         public EmployeeServiceTests()
@@ -20,7 +21,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
             MappingConfig.RegisterMappings();
             _repositoryMock = new Mock<IGenericRepository<Employee>>();
             _employeeRepositoryMock = new Mock<IEmployeeRepository>();
-            _service = new EmployeeService(_repositoryMock.Object, _employeeRepositoryMock.Object);
+            _positionRepositoryMock = new Mock<IPositionRepository>();
+            _service = new EmployeeService(_repositoryMock.Object, _employeeRepositoryMock.Object, _positionRepositoryMock.Object);
         }
 
         #region GetAllAsync Tests
@@ -113,7 +115,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
                 Address = "123 Main St",
                 Cedula = "1234567890",
                 PhoneNumber = "555-1234",
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Email = "john.doe@example.com"
             };
 
             _repositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(new List<Employee>());
@@ -137,7 +140,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
                 Address = "123 Main St",
                 Cedula = "1234567890",
                 PhoneNumber = "555-1234",
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Email = "john.doe@example.com"
             };
             var existingEmployee = CreateEmployee("existing-id", "Jane", "Smith");
             existingEmployee.IdCard = insertDto.Cedula;
@@ -166,7 +170,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
                 Address = "456 New St",
                 Cedula = "1234567890",
                 PhoneNumber = "555-9999",
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Email = "john.updated@example.com"
             };
 
             _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(existingEmployee);
@@ -190,7 +195,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
                 Address = "456 New St",
                 Cedula = "1234567890",
                 PhoneNumber = "555-9999",
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Email = "john.updated@example.com"
             };
 
             _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Employee?)null);
@@ -214,7 +220,8 @@ namespace SIRU.Tests.UnitTests.Services.Employees
                 Address = "456 New St",
                 Cedula = "duplicate-cedula",
                 PhoneNumber = "555-9999",
-                DateOfBirth = new DateTime(1990, 1, 1)
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Email = "john.updated@example.com"
             };
             var conflictingEmployee = CreateEmployee("other-id", "Jane", "Smith");
             conflictingEmployee.IdCard = "duplicate-cedula";
