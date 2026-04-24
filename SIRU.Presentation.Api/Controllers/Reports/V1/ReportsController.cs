@@ -4,7 +4,7 @@ using SIRU.Core.Application.Dtos.Reports;
 using SIRU.Core.Application.Interfaces.Reports;
 using SIRU.Core.Domain.Common.Pagination;
 
-namespace SIRU.Presentation.Api.Controllers;
+namespace SIRU.Presentation.Api.Controllers.Reports.V1;
 
 [ApiController]
 [Route("api/[controller]")]

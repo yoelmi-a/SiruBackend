@@ -1,35 +1,35 @@
 using Microsoft.AspNetCore.Mvc;
-using SIRU.Core.Application.Dtos.Candidates;
-using SIRU.Core.Application.Interfaces.Candidates;
+using SIRU.Core.Application.Dtos.Departments;
+using SIRU.Core.Application.Interfaces.Departments;
 
-namespace SIRU.Presentation.Api.Controllers
+namespace SIRU.Presentation.Api.Controllers.Departments.V1
 {
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class CandidatesController : ControllerBase
+    public class DepartmentsController : ControllerBase
     {
-        private readonly ICandidateService _candidateService;
+        private readonly IDepartmentService _departmentService;
 
-        public CandidatesController(ICandidateService candidateService)
+        public DepartmentsController(IDepartmentService departmentService)
         {
-            _candidateService = candidateService;
+            _departmentService = departmentService;
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CandidateDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DepartmentDto>))]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _candidateService.GetAllAsync();
+            var result = await _departmentService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CandidateDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DepartmentDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var result = await _candidateService.GetByIdAsync(id);
+            var result = await _departmentService.GetByIdAsync(id);
             if (!result.IsSuccess)
             {
                 return NotFound(new { Errors = result.Errors });
@@ -38,16 +38,16 @@ namespace SIRU.Presentation.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CandidateDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(DepartmentDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] CandidateInsertDto dto)
+        public async Task<IActionResult> Create([FromBody] DepartmentInsertDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _candidateService.AddAsync(dto);
+            var result = await _departmentService.AddAsync(dto);
             if (!result.IsSuccess)
             {
                 return BadRequest(new { Errors = result.Errors });
@@ -60,19 +60,19 @@ namespace SIRU.Presentation.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(string id, [FromBody] CandidateUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _candidateService.UpdateAsync(id, dto);
+            var result = await _departmentService.UpdateAsync(id, dto);
             if (!result.IsSuccess)
             {
-                 if (result.Errors != null && result.Errors.Any(e => e.Contains("not found", StringComparison.OrdinalIgnoreCase)))
+                if (result.Errors.Contains("not found"))
                     return NotFound(new { Errors = result.Errors });
-
+                
                 return BadRequest(new { Errors = result.Errors });
             }
             return NoContent();
@@ -81,9 +81,9 @@ namespace SIRU.Presentation.Api.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = await _candidateService.DeleteAsync(id);
+            var result = await _departmentService.DeleteAsync(id);
             if (!result.IsSuccess)
             {
                 return NotFound(new { Errors = result.Errors });

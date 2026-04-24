@@ -5,7 +5,7 @@ using SIRU.Core.Application.Interfaces.Evaluations;
 using SIRU.Core.Application.Interfaces.Employees;
 using SIRU.Core.Domain.Common.Pagination;
 
-namespace SIRU.Presentation.Api.Controllers
+namespace SIRU.Presentation.Api.Controllers.Employees.V1
 {
     [ApiController]
     [Route("api/[controller]")]

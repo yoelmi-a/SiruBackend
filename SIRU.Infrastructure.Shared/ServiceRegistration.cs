@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SIRU.Core.Application.Interfaces.Common;
 using SIRU.Core.Application.Interfaces.Reports;
+using SIRU.Core.Application.Interfaces.Shared;
 using SIRU.Infrastructure.Shared.Pdf;
 using SIRU.Infrastructure.Shared.Storage;
 
@@ -10,7 +11,9 @@ public static class ServiceRegistration
 {
     public static void AddSharedLayer(this IServiceCollection services)
     {
+        services.AddScoped<IEmailService, Notification.EmailService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IPdfReportService, PdfReportService>();
+
     }
 }

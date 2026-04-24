@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIRU.Core.Application.Dtos.Evaluations;
 using SIRU.Core.Application.Interfaces.Evaluations;
 
-namespace SIRU.Presentation.Api.Controllers;
+namespace SIRU.Presentation.Api.Controllers.Evaluations.V1;
 
 [ApiController]
 [Route("api/[controller]")]
