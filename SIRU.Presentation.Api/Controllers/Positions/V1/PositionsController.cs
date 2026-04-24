@@ -1,35 +1,35 @@
 using Microsoft.AspNetCore.Mvc;
-using SIRU.Core.Application.Dtos.Departments;
-using SIRU.Core.Application.Interfaces.Departments;
+using SIRU.Core.Application.Dtos.Positions;
+using SIRU.Core.Application.Interfaces.Positions;
 
-namespace SIRU.Presentation.Api.Controllers
+namespace SIRU.Presentation.Api.Controllers.Positions.V1
 {
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class DepartmentsController : ControllerBase
+    public class PositionsController : ControllerBase
     {
-        private readonly IDepartmentService _departmentService;
+        private readonly IPositionService _positionService;
 
-        public DepartmentsController(IDepartmentService departmentService)
+        public PositionsController(IPositionService positionService)
         {
-            _departmentService = departmentService;
+            _positionService = positionService;
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DepartmentDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PositionDto>))]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _departmentService.GetAllAsync();
+            var result = await _positionService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DepartmentDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PositionDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _departmentService.GetByIdAsync(id);
+            var result = await _positionService.GetByIdAsync(id);
             if (!result.IsSuccess)
             {
                 return NotFound(new { Errors = result.Errors });
@@ -38,16 +38,16 @@ namespace SIRU.Presentation.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(DepartmentDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PositionDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] DepartmentInsertDto dto)
+        public async Task<IActionResult> Create([FromBody] PositionInsertDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _departmentService.AddAsync(dto);
+            var result = await _positionService.AddAsync(dto);
             if (!result.IsSuccess)
             {
                 return BadRequest(new { Errors = result.Errors });
@@ -60,19 +60,19 @@ namespace SIRU.Presentation.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] PositionUpdateDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _departmentService.UpdateAsync(id, dto);
+            var result = await _positionService.UpdateAsync(id, dto);
             if (!result.IsSuccess)
             {
-                if (result.Errors.Contains("not found"))
+                 if (result.Errors.Contains("not found"))
                     return NotFound(new { Errors = result.Errors });
-                
+
                 return BadRequest(new { Errors = result.Errors });
             }
             return NoContent();
@@ -83,7 +83,7 @@ namespace SIRU.Presentation.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _departmentService.DeleteAsync(id);
+            var result = await _positionService.DeleteAsync(id);
             if (!result.IsSuccess)
             {
                 return NotFound(new { Errors = result.Errors });

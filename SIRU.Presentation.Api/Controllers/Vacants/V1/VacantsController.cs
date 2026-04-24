@@ -5,7 +5,7 @@ using SIRU.Core.Application.Dtos.Vacancies;
 using SIRU.Core.Application.Interfaces.Vacants;
 using SIRU.Core.Domain.Common.Pagination;
 
-namespace SIRU.Presentation.Api.Controllers
+namespace SIRU.Presentation.Api.Controllers.Vacants.V1
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -15,7 +15,7 @@ public static class ServiceRegistration
     {
         services.AddSingleton<MLContext>();
         services.AddSingleton<PdfTextExtractor>();
-        services.AddScoped<IRankingService, RankingService>();
+        services.AddSingleton<IRankingService, RankingService>();
         services.AddSingleton<IRankingQueue, RankingQueue>();
         services.AddHostedService<RankingProcessingService>();
     }
