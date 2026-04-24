@@ -5,7 +5,7 @@ using SIRU.Infrastructure.Identity.Entities;
 
 namespace SIRU.Infrastructure.Identity.Contexts
 {
-    public class AuthDbContext : IdentityDbContext
+    public class AuthDbContext : IdentityDbContext<AuthAccount>
     {
         public DbSet<UserSession> UserSessions { get; set; }
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) { }

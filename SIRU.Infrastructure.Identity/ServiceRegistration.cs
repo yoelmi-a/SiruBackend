@@ -144,7 +144,7 @@ namespace SIRU.Infrastructure.Identity
         private static void GeneralConfiguration(IServiceCollection services, IConfiguration config)
         {
             #region Contexts
-            var connectionString = config.GetConnectionString("AuthDbConnection");
+            var connectionString = config.GetConnectionString("IdentityConnection");
             services.AddDbContext<AuthDbContext>(options =>
             {
                 options.UseNpgsql(connectionString,
