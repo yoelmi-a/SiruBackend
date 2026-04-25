@@ -13,4 +13,7 @@ public class VacancyCandidate : BaseEntity<string>
 
     public Vacant? Vacant { get; set; }
     public Candidate? Candidate { get; set; }
+
+
+
 }

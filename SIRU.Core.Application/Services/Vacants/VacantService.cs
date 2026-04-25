@@ -98,6 +98,27 @@ public class VacantService : ServiceBase<Vacant, string, VacantDto, SaveVacantDt
         return Result<VacancyApplicationResultDto>.Success(resultDto);
     }
 
+    public async Task<Result> SetStatusOfVacancyCandidate(string applicationId, CandidateStatus newStatus)
+    {
+        var vacancyCandidate = await _vacancyCandidateRepository.GetByIdAsync(applicationId);
+        if (vacancyCandidate is null)
+        {
+            return Result.NotFound("Application not found.");
+        }
+        if (vacancyCandidate.Status is CandidateStatus.Hired or CandidateStatus.Rejected)
+            return Result.BadRequest("Cannot change status of an application that is already finalized.");
+
+        if (vacancyCandidate.Status == CandidateStatus.Pending && newStatus != CandidateStatus.EvaluationProcess)
+            return Result.BadRequest("Pending candidates can only move to EvaluationProcess.");
+
+        if (vacancyCandidate.Status == CandidateStatus.EvaluationProcess
+            && newStatus is not (CandidateStatus.Hired or CandidateStatus.Rejected))
+            return Result.BadRequest("You can only Hire or Reject this candidate now.");
+        vacancyCandidate.Status = newStatus;
+        await _vacancyCandidateRepository.UpdateAsync(vacancyCandidate);
+        return Result.Success();
+    }
+
     public async Task<Result> RecalculateScoresAsync(string vacantId)
     {
         var vacant = await _repository.GetByIdAsync(vacantId);
