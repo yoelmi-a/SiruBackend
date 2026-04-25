@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using SIRU.Core.Application;
+using SIRU.Core.Domain.Settings;
 using SIRU.Infraestructure.Ranking;
 using SIRU.Infrastructure.Identity;
 using SIRU.Infrastructure.Persistence;
@@ -26,6 +27,7 @@ builder.Services.AddRankingLayer();
 builder.Services.AddSwaggerExtension();
 builder.Services.AddApiVersioningExtension();
 builder.Services.AddProblemDetails();
+builder.Services.Configure<FileStorageSettings>(builder.Configuration.GetSection("FileStorage"));
 
 builder.Services.AddControllers(opt =>
     opt.Filters.Add(new ProducesAttribute("application/json"))

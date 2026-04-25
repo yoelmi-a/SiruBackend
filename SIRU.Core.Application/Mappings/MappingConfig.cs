@@ -8,6 +8,7 @@ using SIRU.Core.Application.Dtos.Vacants;
 using SIRU.Core.Application.Dtos.Vacancies;
 using DomainEntities = SIRU.Core.Domain.Entities;
 using SIRUEnums = SIRU.Core.Domain.Common.Enums;
+using System.IO;
 
 namespace SIRU.Core.Application.Mappings;
 
@@ -98,7 +99,7 @@ public static class MappingConfig
             .Map(dest => dest.VacantId, src => src.VacantId)
             .Map(dest => dest.CandidateId, src => src.CandidateId)
             .Map(dest => dest.CandidateFullName, src => src.Candidate != null ? $"{src.Candidate.Names} {src.Candidate.LastNames}" : null!)
-            .Map(dest => dest.CvUrl, src => src.CvUrl)
+            .Map(dest => dest.CvUrl, src => ConvertToCvUrl(src.CvUrl))
             .Map(dest => dest.Status, src => src.Status)
             .Map(dest => dest.Score, src => src.Score);
 
@@ -108,5 +109,13 @@ public static class MappingConfig
     private static T EnumParse<T>(string value) where T : struct
     {
         return Enum.TryParse<T>(value, true, out var result) ? result : default;
+    }
+
+    private static string ConvertToCvUrl(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return string.Empty;
+
+        return $"/api/files/cv/{Path.GetFileName(filePath)}";
     }
 }
