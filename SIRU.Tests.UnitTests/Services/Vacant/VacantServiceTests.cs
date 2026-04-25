@@ -2,6 +2,7 @@ using AutoMapper;
 using Moq;
 using SIRU.Core.Application.Dtos.Vacant;
 using SIRU.Core.Application.Services.Vacant;
+using SIRU.Core.Domain.Common.Enums;
 using SIRU.Core.Domain.Entities;
 using SIRU.Core.Domain.Interfaces;
 using System.Linq.Expressions;
@@ -25,7 +26,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
         public async Task GetAllAsync_ShouldReturnSuccessWithList()
         {
             // Arrange
-            var entities = new List<SIRU.Core.Domain.Entities.Vacant> { new() { Id = "1", Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 } };
+            var entities = new List<SIRU.Core.Domain.Entities.Vacant> { new() { Id = "1", Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, PositionId = 1, Status = VacantStatus.Closed } };
             var dtos = new List<VacantDto> { new() { Id = "1", Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 } };
 
             _repositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(entities);
@@ -44,7 +45,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
         {
             // Arrange
             var id = "1";
-            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
+            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, PositionId = 1, Status = VacantStatus.Closed };
             var dto = new VacantDto { Id = id, Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
 
             _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(entity);
@@ -78,7 +79,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
         {
             // Arrange
             var saveDto = new SaveVacantDto { Title = "New Dev", Description = "Desc", Profile = "Profile", Status = 1 };
-            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = "new-id", Title = "New Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
+            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = "new-id", Title = "New Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, PositionId = 1, Status = VacantStatus.Closed };
             var resultDto = new VacantDto { Id = "new-id", Title = "New Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
 
             _mapperMock.Setup(m => m.Map<SIRU.Core.Domain.Entities.Vacant>(saveDto)).Returns(entity);
@@ -100,7 +101,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
             // Arrange
             var id = "1";
             var saveDto = new SaveVacantDto { Title = "Updated", Description = "Desc", Profile = "Profile", Status = 1 };
-            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Old", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
+            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Old", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, PositionId = 1, Status = VacantStatus.Closed };
 
             _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(entity);
             _mapperMock.Setup(m => m.Map(saveDto, entity)).Returns(entity);
@@ -118,7 +119,7 @@ namespace SIRU.Tests.UnitTests.Services.Vacant
         {
             // Arrange
             var id = "1";
-            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, Status = 1 };
+            var entity = new SIRU.Core.Domain.Entities.Vacant { Id = id, Title = "Dev", Description = "Desc", Profile = "Profile", PublicationDate = DateTime.UtcNow, PositionId = 1, Status = VacantStatus.Closed };
             _repositoryMock.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(entity);
 
             // Act
