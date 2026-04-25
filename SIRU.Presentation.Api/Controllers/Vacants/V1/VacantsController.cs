@@ -5,6 +5,7 @@ using SIRU.Core.Application.Dtos.Vacancies;
 using SIRU.Core.Application.Interfaces.Vacants;
 using SIRU.Core.Domain.Common.Pagination;
 using SIRU.Presentation.Api.Handlers;
+using SIRU.Core.Domain.Common.Enums;
 
 namespace SIRU.Presentation.Api.Controllers.Vacants.V1
 {
@@ -121,5 +122,17 @@ namespace SIRU.Presentation.Api.Controllers.Vacants.V1
             var result = await _vacantService.GetApplicationsByVacancyAsync(vacancyId, pagination);
             return result.Handle(HttpContext.Request.Path, response => Ok(response));
         }
+
+        [HttpPut("applications/{applicationId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<VacancyApplicationResultDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SetApplicationStatus(string applicationId, CandidateStatus newStatus)
+        {
+            var result = await _vacantService.SetStatusOfVacancyCandidate(applicationId, newStatus);
+            return result.Handle(HttpContext.Request.Path, () => Accepted());
+        }
+
+
+
     }
 }
